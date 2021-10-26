@@ -1,14 +1,16 @@
-var map = "/data/ContinenteConcelhos.geojson"; //world view
+var map = d3.json("/data/ContinenteConcelhos.geojson"); //world view
 
 var width = 1000;
 var height = 400;
 
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
-
-function init() {
-  generate_map();
-}
+map.then(
+  function (map) {
+    map2 = map;
+    generate_map();
+    addZoom();
+  });
   
 function generate_map() {
   var projection = d3
@@ -18,17 +20,17 @@ function generate_map() {
   .center([0, 0])
   .translate([width / 2, height / 2]);
 
-  var path = d3.geoPath().projection(projection);
+  var geog = d3.geoPath().projection(projection);
   
   d3.select("#map")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
     .selectAll("path")
-    //.data(topojson.feature(topology, topology.objects.countries).features)
+    .data(map2.features)
     .join("path")
     .attr("class", "Concelho")
-    .attr("d", path)
+    .attr("d", geog)
     .on("mouseover", handleMouseOver)
     .on("mouseleave", handleMouseLeave)
     /*.attr("id", function (d, i) {
@@ -71,5 +73,3 @@ function zoomed({transform}) {
     .selectAll("path")
     .attr("transform", transform);
 }
-
- 
