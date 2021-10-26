@@ -1,12 +1,13 @@
-var map = d3.json("/data/ContinenteConcelhos.geojson"); //world view
+var map = "/data/ContinenteConcelhos.geojson"; //world view
+
+var map2;
 
 var width = 1000;
 var height = 400;
 
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
-map.then(
-  function (map) {
+Promise.all([d3.json(map)]).then(function (map) {
     map2 = map;
     generate_map();
     addZoom();
@@ -14,20 +15,23 @@ map.then(
   
 function generate_map() {
   var projection = d3
-  .geoMercator()
-  .scale(height / 2)
-  .rotate([0, 0])
-  .center([0, 0])
-  .translate([width / 2, height / 2]);
+    .geoMercator()
+    .scale(height / 2)
+    .rotate([0, 0])
+    .center([0, 0])
+    .translate([width / 2, height / 2]);
+
+  map2 = map2[0];
+  console.log(map2);
 
   var geog = d3.geoPath().projection(projection);
-  
+
   d3.select("#map")
     .append("svg")
     .attr("width", width)
     .attr("height", height)
     .selectAll("path")
-    .data(map2.features)
+    .data(topojson.feature(map2, map2).features)
     .join("path")
     .attr("class", "Concelho")
     .attr("d", geog)
@@ -42,7 +46,7 @@ function generate_map() {
     })*/;
 }
 
-function handleMouseOver(event, d) {
+function handleMouseOver(event, d) {  
   geo_map = d3.select("div#map").select("svg");
 
   geo_map
