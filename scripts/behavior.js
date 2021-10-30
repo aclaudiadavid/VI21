@@ -61,28 +61,25 @@ function generate_map() {
 }
 
 function search_bar() {
-  const municipalitiesList = document.getElementById('municipalities');
+  const municipalitiesList = d3.select("#municipalities");
   const searchBar = document.getElementById('searchBar');
 
   searchBar.addEventListener('keyup', (e) => {
     const searchString = e.target.value.toUpperCase();
 
     const filteredMunicipalities = regions.filter((Concelho) => {
-      return (Concelho.toUpperCase().includes(searchString));
+      return (Concelho.toUpperCase().includes(searchString.replace(/\s+/g, '')));
     });
-  });
 
-  (filteredMunicipalities) => {
-    const htmlString = filteredMunicipalities
-        .map(() => {
-            return `
-            <li ${Concelho} >
-            </li>
-        `;
-        })
-        .join('');
-      municipalitiesList.innerHTML = htmlString;
-  };
+    municipalitiesList.selectAll("li").remove()
+
+    if (searchString != "") {
+      for (i in filteredMunicipalities) {
+        console.log(filteredMunicipalities[i])
+        municipalitiesList.append("li").text(filteredMunicipalities[i])
+      }
+    }
+  });
 }
 
 function generate_stacked() {
