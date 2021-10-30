@@ -7,6 +7,7 @@ var votes;
 var width = 500;
 var height = 600;
 
+list = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
 Promise.all([d3.json(map)]).then(function (map) {
@@ -41,8 +42,12 @@ function generate_map() {
     .join("path")
     .attr("class", "Concelho")
     .attr("d", geog)
+    .attr("id", (d) => {
+      return d.properties.Concelho.replace(/\s+/g, '');
+    })
     .on("mouseover", handleMouseOver)
     .on("mouseleave", handleMouseLeave)
+    .on("click", handleClick)
     /*.attr("id", function (d, i) {
       return d.properties.name;
     })
@@ -60,29 +65,51 @@ function generate_stacked() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
+
   console.log(votes);
 }
 
 function handleMouseOver(event, d) {
-  map = d3.select("div#map").select("svg");
+  name = d.properties.Concelho.replace(/\s+/g, '');
 
-  map
-    .selectAll("path")
-    .filter(function (c) {
-      if (d.properties.Concelho == c.properties.Concelho) {
-        return c;
-      }
-    })
+  if(list.includes(d.properties.Concelho) != true) {
+    map = d3.select("div#map").select("svg");
+
+    map.select("#"+name)
     .style("fill", "#fa624d");
+  }
 }
 
 function handleMouseLeave(event, d) {
-  map = d3.select("div#map").select("svg");
+  name = d.properties.Concelho.replace(/\s+/g, '');
 
-  map
-    .selectAll("path")
-    .style("fill", "black");
+  if(list.includes(d.properties.Concelho) != true) {
+    map = d3.select("div#map").select("svg");
+
+    map
+    .selectAll("#"+name)
+    .style("fill", null);
+  } else {
+    map
+    .selectAll("#"+name)
+    .style("fill", "steelblue");
+  }
+}
+
+function handleClick(event, d) {
+  name = d.properties.Concelho.replace(/\s+/g, '');
+
+  if (list.includes(d.properties.Concelho)) {
+    list.pop(d.properties.Concelho);
+
+    d3.select("#"+name)
+      .attr("fill", null);
+  } else {
+    list.push(d.properties.Concelho);
+
+    d3.select("#"+name)
+      .attr("fill", "steelblue");
+  }
 }
 
 function addZoom() {
