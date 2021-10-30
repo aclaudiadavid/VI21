@@ -11,9 +11,10 @@ list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
+//document.getElementById("clear").addEventListener("click", clear);
+
 Promise.all([d3.json(map)]).then(function (map) {
     map2 = map[0];
-    console.log(map2)
     generate_map();
     search_bar();
     //generate_stacked();
@@ -28,8 +29,6 @@ function generate_map() {
     //.translate([width / 2, height / 2]);
 
   var geog = d3.geoPath().projection(projection);
-
-  console.log(map2);
 
   svg = d3.select("#map")
     .append("svg")
@@ -61,19 +60,26 @@ function generate_map() {
 function search_bar() {
   const municipalitiesList = document.getElementById('municipalities');
   const searchBar = document.getElementById('searchBar');
-  let municipalities = [];
 
   searchBar.addEventListener('keyup', (e) => {
     const searchString = e.target.value.toUpperCase();
 
     const filteredMunicipalities = regions.filter((Concelho) => {
-      console.log(Concelho)
-
-        return (Concelho.toLowerCase().includes(searchString));
+      return (Concelho.toUpperCase().includes(searchString));
     });
-    //displayCharacters(filteredMunicipalities);
-});
+  });
 
+  (filteredMunicipalities) => {
+    const htmlString = filteredMunicipalities
+        .map(() => {
+            return `
+            <li ${Concelho} >
+            </li>
+        `;
+        })
+        .join('');
+      municipalitiesList.innerHTML = htmlString;
+  };
 }
 
 function generate_stacked() {
@@ -129,6 +135,22 @@ function handleClick(event, d) {
     d3.select("#"+name)
       .attr("fill", "steelblue");
   }
+}
+
+function all() {
+  console.log("hi")
+}
+
+function clear() {
+  console.log("list")
+  for (i in list) {
+    var m = list[i];
+
+    d3.select("#"+m)
+      .attr("fill", null);
+  }
+  
+  list = [];
 }
 
 function addZoom() {
