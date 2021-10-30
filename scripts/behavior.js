@@ -8,12 +8,18 @@ var width = 500;
 var height = 600;
 
 list = []
+regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
+function init() {
+  d3.select("#all").on("click", all);
+  d3.select("#clear").on("click", clear);
+}
+
 Promise.all([d3.json(map)]).then(function (map) {
-    map2 = map;
-    console.log(map2)
+    map2 = map[0];
     generate_map();
+    search_bar();
     //generate_stacked();
     addZoom();
   });
@@ -25,16 +31,12 @@ function generate_map() {
     .rotate([5, 5000])
     //.translate([width / 2, height / 2]);
 
-  map2 = map2[0];
-
   var geog = d3.geoPath().projection(projection);
-
-  console.log(map2);
 
   svg = d3.select("#map")
     .append("svg")
     .attr("width", 550)
-    .attr("height", 850)
+    .attr("height", 800);
 
   svg.append("g")
     .selectAll("path")
@@ -43,10 +45,11 @@ function generate_map() {
     .attr("class", "Concelho")
     .attr("d", geog)
     .attr("id", (d) => {
+      regions.push(d.properties.Concelho.replace(/\s+/g, ''));
       return d.properties.Concelho.replace(/\s+/g, '');
     })
-    .on("mouseover", handleMouseOver)
-    .on("mouseleave", handleMouseLeave)
+    //.on("mouseover", handleMouseOver)
+    //.on("mouseleave", handleMouseLeave)
     .on("click", handleClick)
     /*.attr("id", function (d, i) {
       return d.properties.name;
@@ -57,6 +60,41 @@ function generate_map() {
     })*/;
 }
 
+function search_bar() {
+  const municipalitiesList = d3.select("#municipalities");
+  const searchBar = document.getElementById('searchBar');
+
+  searchBar.addEventListener('keyup', (e) => {
+    const searchString = e.target.value.toUpperCase();
+
+    const filteredMunicipalities = regions.filter((Concelho) => {
+      return (Concelho.toUpperCase().includes(searchString.replace(/\s+/g, '')));
+    });
+
+    municipalitiesList.selectAll("li").remove()
+
+    if (searchString != "" && filteredMunicipalities.length < 5) {
+      for (i in filteredMunicipalities) {
+        municipalitiesList.append("li").append("a").on("click", () => add(filteredMunicipalities[i])).text(filteredMunicipalities[i]);
+      }
+    }
+  });
+}
+
+function add(d) {
+  console.log(d);
+  if (list.includes(d)) {
+    list.pop(d);
+
+    d3.select("#"+d)
+      .attr("fill", "black");
+  } else {
+    list.push(d);
+
+    d3.select("#"+d)
+      .attr("fill", "steelblue");
+  }}
+
 function generate_stacked() {
   votes = d3.json(tvotes);
   var svg = d3.select("#stacked")
@@ -65,8 +103,6 @@ function generate_stacked() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  console.log(votes);
 }
 
 function handleMouseOver(event, d) {
@@ -88,7 +124,7 @@ function handleMouseLeave(event, d) {
 
     map
     .selectAll("#"+name)
-    .style("fill", null);
+    .style("fill", "black");
   } else {
     map
     .selectAll("#"+name)
@@ -110,6 +146,25 @@ function handleClick(event, d) {
     d3.select("#"+name)
       .attr("fill", "steelblue");
   }
+}
+
+function all() {
+  list = regions;
+
+  d3.select("#map")
+  .transition()
+  .selectAll("path")
+  .attr("fill", "steelblue");
+}
+
+function clear() {
+  d3.select("#map")
+  .transition()
+  .selectAll("path")
+  .attr("fill", "black");
+
+  const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
+  list = [];
 }
 
 function addZoom() {
