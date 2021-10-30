@@ -13,6 +13,11 @@ margin = { top: 20, right: 20, bottom: 20, left:40 };
 
 //document.getElementById("clear").addEventListener("click", clear);
 
+function init() {
+  d3.select("#all").on("click", all);
+  d3.select("#clear").on("click", clear);
+}
+
 Promise.all([d3.json(map)]).then(function (map) {
     map2 = map[0];
     generate_map();
@@ -149,7 +154,7 @@ function clear() {
     d3.select("#"+m)
       .attr("fill", null);
   }
-  
+
   list = [];
 }
 

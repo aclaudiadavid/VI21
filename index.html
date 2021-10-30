@@ -20,14 +20,14 @@
 		<link rel="stylesheet" href="style/styles.css">
 	</head>
 
-	<body>
+	<body onload="init()">
 		<form id="form">
 			<input type="search" id="searchBar" name="searchBar" placeholder="Search municipalities..." aria-label="Search through site content">
 			<button>Search</button>
 		</form>
 		<ul id="municipalities"></ul>
-		<button onclick="all()">Select All</button>
-		<button id="clear" onclick="clear()">Clear</button>
+		<button id="all">Select All</button>
+		<button id="clear">Clear</button>
 		<div id="map"></div>
 		<div id="stacked"></div>
 	</body>
