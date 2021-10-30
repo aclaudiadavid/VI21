@@ -118,7 +118,7 @@ function handleMouseLeave(event, d) {
 
     map
     .selectAll("#"+name)
-    .style("fill", null);
+    .style("fill", "black");
   } else {
     map
     .selectAll("#"+name)
@@ -143,17 +143,12 @@ function handleClick(event, d) {
 }
 
 function all() {
-  console.log("hi")
+  list = regions;
 }
 
 function clear() {
-  console.log("list")
-  for (i in list) {
-    var m = list[i];
-
-    d3.select("#"+m)
-      .attr("fill", null);
-  }
+  d3.select("#map").selectAll("svg").remove()
+  generate_map()
 
   list = [];
 }
