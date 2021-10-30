@@ -33,7 +33,7 @@ function generate_map() {
   svg = d3.select("#map")
     .append("svg")
     .attr("width", 550)
-    .attr("height", 850)
+    .attr("height", 800);
 
   svg.append("g")
     .selectAll("path")
