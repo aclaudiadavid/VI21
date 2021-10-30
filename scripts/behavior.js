@@ -38,8 +38,6 @@ function generate_map() {
   svg.append("g")
     .selectAll("path")
     .data(topojson.feature(map2, map2.objects.Concelhos).features)
-    //.data(topojson.feature(map2, map2.objects.concelhos).features)
-    //.data(map2.features)
     .join("path")
     .attr("class", "Concelho")
     .attr("d", geog)
@@ -67,22 +65,24 @@ function generate_stacked() {
 }
 
 function handleMouseOver(event, d) {
-  geo_map = d3.select("div#map").select("svg");
+  map = d3.select("div#map").select("svg");
 
-  geo_map
+  map
     .selectAll("path")
     .filter(function (c) {
-      if (d.country == c.properties.name) {
+      if (d.properties.Concelho == c.properties.Concelho) {
         return c;
       }
     })
-    .style("fill", "red");
+    .style("fill", "#fa624d");
 }
 
 function handleMouseLeave(event, d) {
-  d3.select("div#map")
-    .select("svg")
-    .selectAll("path");
+  map = d3.select("div#map").select("svg");
+
+  map
+    .selectAll("path")
+    .style("fill", "black");
 }
 
 function addZoom() {
