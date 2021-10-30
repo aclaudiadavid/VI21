@@ -11,9 +11,10 @@ list = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
 Promise.all([d3.json(map)]).then(function (map) {
-    map2 = map;
+    map2 = map[0];
     console.log(map2)
     generate_map();
+    search_bar();
     //generate_stacked();
     addZoom();
   });
@@ -24,8 +25,6 @@ function generate_map() {
     .scale(6000)
     .rotate([5, 5000])
     //.translate([width / 2, height / 2]);
-
-  map2 = map2[0];
 
   var geog = d3.geoPath().projection(projection);
 
@@ -55,6 +54,22 @@ function generate_map() {
     .text(function (d) {
       return d.properties.name;
     })*/;
+}
+
+function search_bar() {
+  const municipalitiesList = document.getElementById('municipalities');
+  const searchBar = document.getElementById('searchBar');
+  let municipalities = [];
+
+  searchBar.addEventListener('keyup', (e) => {
+    const searchString = e.target.value.toUpperCase();
+
+    const filteredMunicipalities = municipalitiesList.filter((Concelho) => {
+        return (Concelho.name.toUpperCase().includes(searchString));
+    });
+    //displayCharacters(filteredMunicipalities);
+});
+
 }
 
 function generate_stacked() {
