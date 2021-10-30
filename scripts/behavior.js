@@ -144,6 +144,8 @@ function handleClick(event, d) {
 
 function all() {
   list = regions;
+
+  d3.select("#map").selectAll("svg").attr("fill", "steelblue");
 }
 
 function clear() {
