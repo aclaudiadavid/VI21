@@ -73,14 +73,27 @@ function search_bar() {
 
     municipalitiesList.selectAll("li").remove()
 
-    if (searchString != "") {
+    if (searchString != "" && filteredMunicipalities.length < 5) {
       for (i in filteredMunicipalities) {
-        console.log(filteredMunicipalities[i])
-        municipalitiesList.append("li").text(filteredMunicipalities[i])
+        municipalitiesList.append("li").append("a").on("click", () => add(filteredMunicipalities[i])).text(filteredMunicipalities[i]);
       }
     }
   });
 }
+
+function add(d) {
+  console.log(d);
+  if (list.includes(d)) {
+    list.pop(d);
+
+    d3.select("#"+d)
+      .attr("fill", "black");
+  } else {
+    list.push(d);
+
+    d3.select("#"+d)
+      .attr("fill", "steelblue");
+  }}
 
 function generate_stacked() {
   votes = d3.json(tvotes);
@@ -90,8 +103,6 @@ function generate_stacked() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-  console.log(votes);
 }
 
 function handleMouseOver(event, d) {
@@ -152,6 +163,7 @@ function clear() {
   .selectAll("path")
   .attr("fill", "black");
 
+  const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
 }
 
