@@ -11,8 +11,6 @@ list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
-//document.getElementById("clear").addEventListener("click", clear);
-
 function init() {
   d3.select("#all").on("click", all);
   d3.select("#clear").on("click", clear);
@@ -50,8 +48,8 @@ function generate_map() {
       regions.push(d.properties.Concelho.replace(/\s+/g, ''));
       return d.properties.Concelho.replace(/\s+/g, '');
     })
-    .on("mouseover", handleMouseOver)
-    .on("mouseleave", handleMouseLeave)
+    //.on("mouseover", handleMouseOver)
+    //.on("mouseleave", handleMouseLeave)
     .on("click", handleClick)
     /*.attr("id", function (d, i) {
       return d.properties.name;
@@ -145,19 +143,19 @@ function handleClick(event, d) {
 function all() {
   list = regions;
 
-  d3.select("#map").selectAll("svg").attr("fill", "steelblue");
+  d3.select("#map")
+  .transition()
+  .selectAll("path")
+  .attr("fill", "steelblue");
 }
 
 function clear() {
-  for (i in list) {
-    var m = list[i].replace(/\s+/g, '');
-
-    d3.select("#"+m).attr("fill", "black");
-  }
+  d3.select("#map")
+  .transition()
+  .selectAll("path")
+  .attr("fill", "black");
 
   list = [];
-
-  document.location.reload()
 }
 
 function addZoom() {
