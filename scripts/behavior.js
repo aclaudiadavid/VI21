@@ -143,14 +143,19 @@ function handleClick(event, d) {
 }
 
 function all() {
-  list = regions;
+  console.log("hi")
 }
 
 function clear() {
-  d3.select("#map").selectAll("svg").remove()
-  generate_map()
+  for (i in list) {
+    var m = list[i].replace(/\s+/g, '');
+
+    d3.select("#"+m).attr("fill", "black");
+  }
 
   list = [];
+
+  document.location.reload()
 }
 
 function addZoom() {
