@@ -8,6 +8,7 @@ var width = 500;
 var height = 600;
 
 list = []
+regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
 Promise.all([d3.json(map)]).then(function (map) {
@@ -42,6 +43,7 @@ function generate_map() {
     .attr("class", "Concelho")
     .attr("d", geog)
     .attr("id", (d) => {
+      regions.push(d.properties.Concelho.replace(/\s+/g, ''));
       return d.properties.Concelho.replace(/\s+/g, '');
     })
     .on("mouseover", handleMouseOver)
@@ -64,8 +66,10 @@ function search_bar() {
   searchBar.addEventListener('keyup', (e) => {
     const searchString = e.target.value.toUpperCase();
 
-    const filteredMunicipalities = municipalitiesList.filter((Concelho) => {
-        return (Concelho.name.toUpperCase().includes(searchString));
+    const filteredMunicipalities = regions.filter((Concelho) => {
+      console.log(Concelho)
+
+        return (Concelho.toLowerCase().includes(searchString));
     });
     //displayCharacters(filteredMunicipalities);
 });
