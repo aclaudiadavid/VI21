@@ -105,20 +105,23 @@ function generate_line_chart(){
 
   var anos_eleicoes = Object.keys(votes["Cascais"]);
   var votos_concelho = Object.values(votes["Cascais"]);
+  //console.log(votos_concelho);
+  
+  anos_eleicoes = anos_eleicoes.map(function(item){return parseInt(item,10);});
+
+  console.log(anos_eleicoes);
 
   /*votos_PS = votos_concelho.filter(function(d) {
-               return d.PS;
-  });
-  console.log(votos_PS);*/
+               console.log(d.PS);
+  });*/
 
-  line = d3
+ /*line = d3
         .line()
         .defined(function (d) {
-          console.log(d);
           return d.PS > 0;
         })
-        .x((d) => d.total)
-        .y((d) => d.PS);
+        .x((d) => d)
+        .y((d) => y(d.PS));*/
 
   
   var svg = d3.select("#lineChart")
@@ -131,7 +134,6 @@ function generate_line_chart(){
     x = d3
         .scaleLinear()
         .domain([1993,2017])
-        .nice()
         .range([margin.left, width - margin.right]);
     
     y = d3
@@ -166,9 +168,30 @@ function generate_line_chart(){
      .attr("stroke", "steelblue")
      .attr("stroke-width", 1.5)
      .attr("stroke-linejoin", "round")
-     .attr("stroke-linecap", "round")
-     .attr("d", line);
+     .attr("stroke-linecap", "round");
+     //.attr("d", line)
 
+     //Title of X-Axis
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("x", width - margin.right)
+     .attr("y", height + margin.top)
+     .text("Anos de Eleições");
+
+     //Title of Y-Axis
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("transform", "rotate(-90)")
+     .attr("y", -margin.left+20)
+     .attr("x", -margin.top)
+     .text("Nº de votos");
+  
+     //Title of LineChart
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("x", (margin.left + margin.right + width )/ 2)
+     .attr("y", 0)
+     .text("Cascais");
 }
 
 function handleMouseOver(event, d) {
