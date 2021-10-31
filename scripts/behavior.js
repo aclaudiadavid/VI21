@@ -73,7 +73,7 @@ function generate_stacked() {
   svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x).tickSizeOuter(0));
-  
+
   // Add Y axis
   var y = d3.scaleLinear()
     .domain([0, 100])
@@ -88,10 +88,10 @@ function generate_stacked() {
 
   var stackedData = d3.stack()
     .keys(["votos", "abstencao"]);
-  
+
   var dt = stackedData(votos_portugal);
 
-  
+
 }
 
 function generate_line_chart(){
@@ -123,19 +123,19 @@ function generate_line_chart(){
         .x((d) => d)
         .y((d) => y(d.PS));*/
 
-  
+
   var svg = d3.select("#lineChart")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
+
     x = d3
         .scaleLinear()
         .domain([1993,2017])
         .range([margin.left, width - margin.right]);
-    
+
     y = d3
         .scaleLinear()
         .domain([0,100000])
@@ -159,18 +159,20 @@ function generate_line_chart(){
 
     svg.append("g").call(xAxis);
 
-    svg.append("g").call(yAxis); 
+    svg.append("g").call(yAxis);
 
+    svg.append("path")
+    .datum(votos_concelho)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("stroke-linejoin", "round")
+    .attr("stroke-linecap", "round")
+    .attr("d", d3.line()
+       .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
+       .y((d) => y(d.PS)));
 
-  svg.append("path")
-     .datum(votos_concelho)
-     .attr("fill", "none")
-     .attr("stroke", "steelblue")
-     .attr("stroke-width", 1.5)
-     .attr("stroke-linejoin", "round")
-     .attr("stroke-linecap", "round");
-     //.attr("d", line)
-
+       
      //Title of X-Axis
   svg.append("text")
      .attr("text-anchor", "end")
@@ -192,6 +194,7 @@ function generate_line_chart(){
      .attr("x", (margin.left + margin.right + width )/ 2)
      .attr("y", 0)
      .text("Cascais");
+
 }
 
 function handleMouseOver(event, d) {
