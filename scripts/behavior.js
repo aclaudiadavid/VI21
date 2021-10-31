@@ -152,7 +152,7 @@ function generate_line_chart() {
 
   y = d3
       .scaleLinear()
-      .domain([0,100000])
+      .domain([0,100])
       .range([height -margin.bottom, margin.top]);
 
   xAxis = (g) =>
@@ -184,7 +184,7 @@ function generate_line_chart() {
       .attr("stroke-linecap", "round")
       .attr("d", d3.line()
         .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
-        .y((d) => y(d.PS)));
+        .y((d) => y((d.PS/d.votos)*100)));
 
 }
 
