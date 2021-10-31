@@ -28,15 +28,14 @@ function generate_map() {
   var projection = d3
     .geoMercator()
     .scale(6000)
-    .rotate([5, 5000])
-    //.translate([width / 2, height / 2]);
+    .rotate([5, 5000]);
 
   var geog = d3.geoPath().projection(projection);
 
   svg = d3.select("#map")
     .append("svg")
-    .attr("width", 550)
-    .attr("height", 800);
+    .attr("width", 470)
+    .attr("height", 700);
 
   svg.append("g")
     .selectAll("path")
@@ -48,16 +47,11 @@ function generate_map() {
       regions.push(d.properties.Concelho.replace(/\s+/g, ''));
       return d.properties.Concelho.replace(/\s+/g, '');
     })
-    //.on("mouseover", handleMouseOver)
-    //.on("mouseleave", handleMouseLeave)
     .on("click", handleClick)
-    /*.attr("id", function (d, i) {
-      return d.properties.name;
-    })
     .append("title")
     .text(function (d) {
-      return d.properties.name;
-    })*/;
+      return d.properties.Concelho;
+    });
 }
 
 function search_bar() {
@@ -103,33 +97,6 @@ function generate_stacked() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-}
-
-function handleMouseOver(event, d) {
-  name = d.properties.Concelho.replace(/\s+/g, '');
-
-  if(list.includes(d.properties.Concelho) != true) {
-    map = d3.select("div#map").select("svg");
-
-    map.select("#"+name)
-    .style("fill", "#fa624d");
-  }
-}
-
-function handleMouseLeave(event, d) {
-  name = d.properties.Concelho.replace(/\s+/g, '');
-
-  if(list.includes(d.properties.Concelho) != true) {
-    map = d3.select("div#map").select("svg");
-
-    map
-    .selectAll("#"+name)
-    .style("fill", "black");
-  } else {
-    map
-    .selectAll("#"+name)
-    .style("fill", "steelblue");
-  }
 }
 
 function handleClick(event, d) {
