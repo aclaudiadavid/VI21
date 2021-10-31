@@ -31,3 +31,9 @@ div {
     position: fixed;
     top: 130px;
 }
+
+#lineChart {
+    position: fixed;
+    top: 130px;
+    left: 1000px;
+}

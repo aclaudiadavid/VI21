@@ -4,8 +4,8 @@ var tvotes = "/data/resultados_eleicoes.json";
 var map2;
 var votes;
 
-var width = 500;
-var height = 600;
+var width = 400;
+var height = 200;
 
 list = []
 regions = []
@@ -20,11 +20,10 @@ function init() {
 Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     map2 = d[0];
     votes = d[1];
-    //console.log(votes);
     generate_map();
     //generate_stacked();
     generate_line_chart();
-    //addZoom();
+    addZoom();
   });
 
 function generate_map() {
@@ -135,83 +134,59 @@ function generate_stacked() {
 }
 
 function generate_line_chart() {
+  var anos_eleicoes = Object.keys(votes["Cascais"]);
+  var votos_concelho = Object.values(votes["Cascais"]);
 
-    width = 500;
+  var svg = d3.select("#lineChart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    height = 400;
+  x = d3
+      .scaleLinear()
+      .domain([1993,2017])
+      .nice()
+      .range([margin.left, width - margin.right]);
 
-    margin = { top: 20, right: 20, bottom :20, left: 40};
+  y = d3
+      .scaleLinear()
+      .domain([0,100000])
+      .range([height -margin.bottom, margin.top]);
 
+  xAxis = (g) =>
+      g.attr("transform", `translate(0,${height - margin.bottom})`)
+          .call(
+              d3
+                  .axisBottom(x)
+                  .tickFormat((x) => x)
+                  .tickSizeOuter(0)
+          );
 
-    var anos_eleicoes = Object.keys(votes["Cascais"]);
-    var votos_concelho = Object.values(votes["Cascais"]);
+  yAxis = (g) =>
+      g
+          .attr("transform", `translate(${margin.left},0)`)
+          .call(d3
+                  .axisLeft(y)
+                  .tickFormat((x) => x));
 
-    var svg = d3.select("#lineChart")
-          .append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-          .append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  svg.append("g").call(xAxis);
 
-      x = d3
-          .scaleLinear()
-          .domain([1993,2017])
-          .nice()
-          .range([margin.left, width - margin.right]);
-
-      y = d3
-          .scaleLinear()
-          .domain([0,100000])
-          .range([height -margin.bottom, margin.top]);
-
-      xAxis = (g) =>
-          g.attr("transform", `translate(0,${height - margin.bottom})`)
-              .call(
-                  d3
-                      .axisBottom(x)
-                      .tickFormat((x) => x)
-                      .tickSizeOuter(0)
-              );
-
-      yAxis = (g) =>
-          g
-              .attr("transform", `translate(${margin.left},0)`)
-              .call(d3
-                      .axisLeft(y)
-                      .tickFormat((x) => x));
-
-      svg.append("g").call(xAxis);
-
-      svg.append("g").call(yAxis);
+  svg.append("g").call(yAxis);
 
 
-      svg.append("path")
-         .datum(votos_concelho)
-         .attr("fill", "none")
-         .attr("stroke", "steelblue")
-         .attr("stroke-width", 1.5)
-         .attr("stroke-linejoin", "round")
-         .attr("stroke-linecap", "round")
-         .attr("d", d3.line()
-            .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
-            .y((d) => y(d.PS)));
+  svg.append("path")
+      .datum(votos_concelho)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", d3.line()
+        .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
+        .y((d) => y(d.PS)));
 
-}
-
-function handleMouseLeave(event, d) {
-  name = d.properties.Concelho.replace(/\s+/g, '');
-
-  if(list.includes(d.properties.Concelho) != true) {
-    map = d3.select("div#map").select("svg");
-
-    map
-    .selectAll("#"+name)
-    .style("fill", "black");
-  } else {
-    map
-    .selectAll("#"+name)
-    .style("fill", "steelblue");
-  }
 }
 
 function handleClick(event, d) {
