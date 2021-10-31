@@ -11,6 +11,7 @@ list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
+<<<<<<< HEAD
 function init() {
   d3.select("#all").on("click", all);
   d3.select("#clear").on("click", clear);
@@ -20,8 +21,16 @@ Promise.all([d3.json(map)]).then(function (map) {
     map2 = map[0];
     generate_map();
     search_bar();
+=======
+Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
+    map2 = d[0];
+    votes = d[1];
+    //console.log(votes);
+    //generate_map();
+>>>>>>> a21c27a7399df219a3a5eb237ba93c84a404dc9b
     //generate_stacked();
-    addZoom();
+    generate_line_chart();
+    //addZoom();
   });
 
 function generate_map() {
@@ -96,7 +105,13 @@ function add(d) {
   }}
 
 function generate_stacked() {
-  votes = d3.json(tvotes);
+
+  //var concelhos = Object.keys(votes);
+  //console.log(concelhos);
+  var anos_eleicoes = Object.keys(votes["Portugal"]);
+  var votos_portugal = votes["Portugal"];
+  console.log(votos_portugal);
+
   var svg = d3.select("#stacked")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
