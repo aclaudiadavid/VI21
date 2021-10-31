@@ -11,23 +11,16 @@ list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left:40 };
 
-<<<<<<< HEAD
 function init() {
   d3.select("#all").on("click", all);
   d3.select("#clear").on("click", clear);
 }
 
-Promise.all([d3.json(map)]).then(function (map) {
-    map2 = map[0];
-    generate_map();
-    search_bar();
-=======
 Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     map2 = d[0];
     votes = d[1];
     //console.log(votes);
     //generate_map();
->>>>>>> a21c27a7399df219a3a5eb237ba93c84a404dc9b
     //generate_stacked();
     generate_line_chart();
     //addZoom();
@@ -120,15 +113,85 @@ function generate_stacked() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 }
 
-function handleMouseOver(event, d) {
-  name = d.properties.Concelho.replace(/\s+/g, '');
+function generate_line_chart() {
+  // Add X axis
+  var x = d3.scaleBand()
+  .domain(anos_eleicoes)
+  .range([0, width])
+  .padding([0.2])
+  svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x).tickSizeOuter(0));
 
-  if(list.includes(d.properties.Concelho) != true) {
-    map = d3.select("div#map").select("svg");
+  // Add Y axis
+  var y = d3.scaleLinear()
+  .domain([0, 100])
+  .range([ height, 0 ]);
+  svg.append("g")
+  .call(d3.axisLeft(y));
 
-    map.select("#"+name)
-    .style("fill", "#fa624d");
-  }
+  // color palette = one color per subgroup
+  var color = d3.scaleOrdinal()
+  .domain(["votos", "abstencao"])
+  .range(['#e41a1c','#377eb8']);
+
+  var stackedData = d3.stack()
+  .keys(["votos", "abstencao"]);
+
+  var dt = stackedData(votos_portugal);
+
+
+
+    var svg = d3.select("#lineChart")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      x = d3
+          .scaleLinear()
+          .domain([1993,2017])
+          .nice()
+          .range([margin.left, width - margin.right]);
+
+      y = d3
+          .scaleLinear()
+          .domain([0,100000])
+          .range([height -margin.bottom, margin.top]);
+
+      xAxis = (g) =>
+          g.attr("transform", `translate(0,${height - margin.bottom})`)
+              .call(
+                  d3
+                      .axisBottom(x)
+                      .tickFormat((x) => x)
+                      .tickSizeOuter(0)
+              );
+
+      yAxis = (g) =>
+          g
+              .attr("transform", `translate(${margin.left},0)`)
+              .call(d3
+                      .axisLeft(y)
+                      .tickFormat((x) => x));
+
+      svg.append("g").call(xAxis);
+
+      svg.append("g").call(yAxis);
+
+
+      svg.append("path")
+         .datum(votos_concelho)
+         .attr("fill", "none")
+         .attr("stroke", "steelblue")
+         .attr("stroke-width", 1.5)
+         .attr("stroke-linejoin", "round")
+         .attr("stroke-linecap", "round")
+         .attr("d", d3.line()
+            .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
+            .y((d) => y(d.PS)));
+
 }
 
 function handleMouseLeave(event, d) {
