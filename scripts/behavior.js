@@ -22,7 +22,6 @@ Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     votes = d[1];
     generate_map();
     //generate_stacked();
-    generate_line_chart();
     addZoom();
   });
 
@@ -89,7 +88,9 @@ function add(d) {
 
     d3.select("#"+d)
       .attr("fill", "steelblue");
-  }}
+  }
+  add_line_charts();
+}
 
 function generate_stacked() {
 
@@ -133,9 +134,19 @@ function generate_stacked() {
     var dt = stackedData(votos_portugal);
 }
 
-function generate_line_chart() {
-  var anos_eleicoes = Object.keys(votes["Cascais"]);
-  var votos_concelho = Object.values(votes["Cascais"]);
+function add_line_charts(){
+  if (list.length != 0) {
+    for (i in list) {
+      generate_line_chart(list[i].toLowerCase());
+    }
+  }
+}
+
+function generate_line_chart(concelho) {
+  concelho = concelho.replace(/\s+/g, '');
+  console.log(concelho); //nao está em camel case e agora???
+  var anos_eleicoes = Object.keys(votes[concelho]);
+  var votos_concelho = Object.values(votes[concelho]);
 
   var svg = d3.select("#lineChart")
         .append("svg")
@@ -201,6 +212,8 @@ function handleClick(event, d) {
 
     d3.select("#"+name)
       .attr("fill", "steelblue");
+
+      add_line_charts();
   }
 }
 
