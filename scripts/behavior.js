@@ -12,8 +12,7 @@ margin = { top: 20, right: 20, bottom: 20, left:40 };
 Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     map2 = d[0];
     votes = d[1];
-    //console.log(votes);
-    //generate_map();
+    generate_map();
     //generate_stacked();
     generate_line_chart();
     //addZoom();
@@ -105,24 +104,7 @@ function generate_line_chart(){
 
   var anos_eleicoes = Object.keys(votes["Cascais"]);
   var votos_concelho = Object.values(votes["Cascais"]);
-  //console.log(votos_concelho);
   
-  anos_eleicoes = anos_eleicoes.map(function(item){return parseInt(item,10);});
-
-  console.log(anos_eleicoes);
-
-  /*votos_PS = votos_concelho.filter(function(d) {
-               console.log(d.PS);
-  });*/
-
- /*line = d3
-        .line()
-        .defined(function (d) {
-          return d.PS > 0;
-        })
-        .x((d) => d)
-        .y((d) => y(d.PS));*/
-
 
   var svg = d3.select("#lineChart")
         .append("svg")
@@ -172,7 +154,7 @@ function generate_line_chart(){
        .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
        .y((d) => y(d.PS)));
 
-       
+
      //Title of X-Axis
   svg.append("text")
      .attr("text-anchor", "end")
@@ -186,7 +168,7 @@ function generate_line_chart(){
      .attr("transform", "rotate(-90)")
      .attr("y", -margin.left+20)
      .attr("x", -margin.top)
-     .text("Nº de votos");
+     .text("% de votos");
   
      //Title of LineChart
   svg.append("text")
