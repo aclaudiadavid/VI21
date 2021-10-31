@@ -14,13 +14,14 @@ margin = { top: 20, right: 20, bottom: 20, left:40 };
 function init() {
   d3.select("#all").on("click", all);
   d3.select("#clear").on("click", clear);
+  search_bar()
 }
 
 Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     map2 = d[0];
     votes = d[1];
     //console.log(votes);
-    //generate_map();
+    generate_map();
     //generate_stacked();
     generate_line_chart();
     //addZoom();
@@ -111,36 +112,45 @@ function generate_stacked() {
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add X axis
+    var x = d3.scaleBand()
+    .domain(anos_eleicoes)
+    .range([0, width])
+    .padding([0.2])
+    svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
+    svg.append("g")
+    .call(d3.axisLeft(y));
+
+    // color palette = one color per subgroup
+    var color = d3.scaleOrdinal()
+    .domain(["votos", "abstencao"])
+    .range(['#e41a1c','#377eb8']);
+
+    var stackedData = d3.stack()
+    .keys(["votos", "abstencao"]);
+
+    var dt = stackedData(votos_portugal);
 }
 
 function generate_line_chart() {
-  // Add X axis
-  var x = d3.scaleBand()
-  .domain(anos_eleicoes)
-  .range([0, width])
-  .padding([0.2])
-  svg.append("g")
-  .attr("transform", "translate(0," + height + ")")
-  .call(d3.axisBottom(x).tickSizeOuter(0));
 
-  // Add Y axis
-  var y = d3.scaleLinear()
-  .domain([0, 100])
-  .range([ height, 0 ]);
-  svg.append("g")
-  .call(d3.axisLeft(y));
+    width = 500;
 
-  // color palette = one color per subgroup
-  var color = d3.scaleOrdinal()
-  .domain(["votos", "abstencao"])
-  .range(['#e41a1c','#377eb8']);
+    height = 400;
 
-  var stackedData = d3.stack()
-  .keys(["votos", "abstencao"]);
-
-  var dt = stackedData(votos_portugal);
+    margin = { top: 20, right: 20, bottom :20, left: 40};
 
 
+    var anos_eleicoes = Object.keys(votes["Cascais"]);
+    var votos_concelho = Object.values(votes["Cascais"]);
 
     var svg = d3.select("#lineChart")
           .append("svg")
