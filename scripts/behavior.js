@@ -146,7 +146,7 @@ function generate_line_chart() {
 
   x = d3
       .scaleLinear()
-      .domain([1993,2017])
+      .domain([1993, 2017])
       .nice()
       .range([margin.left, width - margin.right]);
 
@@ -159,11 +159,10 @@ function generate_line_chart() {
       g.attr("transform", `translate(0,${height - margin.bottom})`)
           .call(
               d3
-                  .axisBottom(x)
-                  .tickFormat((x) => x)
-                  .tickSizeOuter(0)
+              .axisBottom(x)
+              .tickFormat((x) => x)
+              .tickValues(d3.range(1993, 2018, 4))
           );
-
   yAxis = (g) =>
       g
           .attr("transform", `translate(${margin.left},0)`)
