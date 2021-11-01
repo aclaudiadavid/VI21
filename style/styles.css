@@ -55,7 +55,7 @@ div {
 }
 
 #right {
-    margin-right: 30px;
+    margin-right: 0px;
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
