@@ -231,7 +231,9 @@ var colorScale = d3.scaleOrdinal()
           return y((d[keys[part]]/d.votos)*100);
         }
         else {return  y(0)}
-      }));
+      }))
+    .append("title")
+    .text(function () {return keys[part]});  //To do: adicionar circulos invisiveis nos pontos, e meter partido+número absoluto de votos
   }
 
   partidos_show = []
