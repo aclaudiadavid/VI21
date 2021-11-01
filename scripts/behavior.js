@@ -82,7 +82,6 @@ function search_bar() {
 }
 
 function add(d) {
-  console.log(d);
   if (list.includes(d)) {
     list.pop(d);
 
@@ -107,7 +106,7 @@ function generate_stacked() {
 
   var svg = d3.select("#stacked")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width - 50 + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -212,7 +211,6 @@ function generate_line_chart(concelho) {
       .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
       .y((d) =>{
         if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
-          console.log(keys[part])
           return y((d[keys[part]]/d.votos)*100);
         } else {
           return  y(0)
@@ -262,12 +260,14 @@ function handleClick(event, d) {
 }
 
 function all() {
-  list = regions;
+  list = ["PORTUGAL"];
 
   d3.select("#map")
   .transition()
   .selectAll("path")
   .attr("fill", "steelblue");
+
+  add_line_charts();
 }
 
 function clear() {
