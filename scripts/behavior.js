@@ -264,7 +264,7 @@ var colorScale = d3.scaleOrdinal()
   .attr("text-anchor", "end")
   .attr("x", width - margin.right - 0)
   .attr("y", height + margin.top)
-  .text("Anos de Eleições");
+  .text("Election years");
 
   //Title of Y-Axis
   svg.append("text")
@@ -272,7 +272,7 @@ var colorScale = d3.scaleOrdinal()
   .attr("transform", "rotate(-90)")
   .attr("y", -margin.left+30)
   .attr("x", -margin.top)
-  .text("% de votos");
+  .text("% of votes");
 
   //Title of LineChart
   svg.append("text")
