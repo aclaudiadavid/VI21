@@ -153,6 +153,8 @@ function generate_line_chart(concelho) {
   concelho = concelho.replace(/\s+/g, '');
   var anos_eleicoes = Object.keys(votes[concelho]);
   var votos_concelho = Object.values(votes[concelho])
+  console.log(votos_concelho);
+  
 
   var svg = d3.select("#lineChart")
         .append("svg")
@@ -191,39 +193,50 @@ function generate_line_chart(concelho) {
 
   svg.append("g").call(yAxis);
 
+
+// Palete de cores - 1 cor por cada partido politico
+var colorScale = d3.scaleOrdinal()
+.domain(["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"])
+.range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6']);
+
   keys = []
   for(i in anos_eleicoes) {
     for(part in votes[concelho][anos_eleicoes[i]]) {
-      if (part in keys == false) {
-        keys.push(part)
+      if (!(keys.includes(part))) {
+        keys.push(part);
       }
     }
   }
-  
+
+  partidos_desenhados = []
+  //keys = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
+  //comentar a linha de cima quando nao testar 
   for (part in keys) {
     svg.append("path")
     .datum(votos_concelho)
     .attr("fill", "none")
-    .attr("stroke", "steelblue")
+    .attr("stroke", function(d) {return colorScale(keys[part])})
     .attr("stroke-width", 1.5)
     .attr("stroke-linejoin", "round")
     .attr("stroke-linecap", "round")
     .attr("d", d3.line()
       .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
-      .y((d) =>{
+      .y((d) =>{ 
         if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
-          console.log(keys[part])
+          //console.log(keys[part])
+          if (!(partidos_desenhados.includes(keys[part]))){
+          partidos_desenhados.push(keys[part])}
           return y((d[keys[part]]/d.votos)*100);
-        } else {
-          return  y(0)
-        }
+        } 
+        else {return  y(0)}
       }));
   }
+  console.log(partidos_desenhados);
 
   //Title of X-Axis
   svg.append("text")
   .attr("text-anchor", "end")
-  .attr("x", width - margin.right)
+  .attr("x", width - margin.right - 0)
   .attr("y", height + margin.top)
   .text("Anos de Eleições");
 
@@ -241,7 +254,15 @@ function generate_line_chart(concelho) {
   .attr("x", (margin.left + margin.right + width )/ 2)
   .attr("y", 0)
   .text(votesRaw[concelho]);
-}
+
+
+  var spacing = 0;
+  for (part in partidos_desenhados) {
+    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {return colorScale(partidos_desenhados[part])});  //paints the corresponding color
+    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){ return partidos_desenhados[part] }).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
+    spacing+=20
+    
+  }}
 
 function handleClick(event, d) {
   name = d.properties.Concelho.replace(/\s+/g, '');
