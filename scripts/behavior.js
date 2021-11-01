@@ -157,7 +157,7 @@ function generate_line_chart(concelho) {
 
   var svg = d3.select("#lineChart")
         .append("svg")
-        .attr("width", width + margin.left + margin.right + 100)
+        .attr("width", width + margin.left + margin.right + 200)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -224,7 +224,7 @@ var colorScale2 = d3.scaleOrdinal()
     svg.append("path")
     .datum(votos_concelho)
     .attr("fill", "none")
-    .attr("stroke", function(d) {if (partidos_principais.includes(keys[part])){return colorScale1(keys[part])}else return colorScale2(keys[part])})  
+    .attr("stroke", function(d) {if (partidos_principais.includes(keys[part])){return colorScale1(keys[part])}else return colorScale2(keys[part])})
     .attr("stroke-width", 1.5)
     .attr("stroke-linejoin", "round")
     .attr("stroke-linecap", "round")
@@ -307,7 +307,8 @@ function handleClick(event, d) {
   name = d.properties.Concelho.replace(/\s+/g, '');
 
   if (list.includes(d.properties.Concelho)) {
-    list.pop(d.properties.Concelho);
+    list = list.filter((a) => a !== d.properties.Concelho)
+
 
     d3.select("#"+name)
       .attr("fill", null);
