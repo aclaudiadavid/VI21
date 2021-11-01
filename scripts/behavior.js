@@ -193,13 +193,16 @@ function generate_line_chart(concelho) {
   svg.append("g").call(yAxis);
 
 
-// Palete de cores - 1 cor por cada partido politico
+// Palete de cores - 1 cor por cada partido politico principal
 
 partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
 
 var colorScale1 = d3.scaleOrdinal()
 .domain(partidos_principais)
 .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6']);
+
+
+// Palete de cores secundária para partidos menores/coligações
 
 var colorScale2 = d3.scaleOrdinal()
 .domain([0,10])
@@ -266,6 +269,7 @@ var colorScale2 = d3.scaleOrdinal()
     partidos_desenhados[p] = 0
   }
 
+  console.log(partidos_show);
   //Title of X-Axis
   svg.append("text")
   .attr("text-anchor", "end")
@@ -291,10 +295,10 @@ var colorScale2 = d3.scaleOrdinal()
 
   var spacing = 0; //espaçamento entre cada código de cor
 
-  for (part in partidos_desenhados) {
+  for (part in partidos_show) {
     //Desenhar o círculo com a cor correspondente ao partido, e o nome do partido
-    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_desenhados[part])){console.log(partidos_desenhados[part], colorScale1(partidos_desenhados[part])); return colorScale1(partidos_desenhados[part])}else return colorScale2(partidos_desenhados[part])});  //paints the corresponding color
-    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){return partidos_desenhados[part]}).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
+    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
+    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){return partidos_show[part]}).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
     spacing+=20
 
   }}
