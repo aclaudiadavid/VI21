@@ -153,11 +153,11 @@ function generate_line_chart(concelho) {
   var anos_eleicoes = Object.keys(votes[concelho]);
   var votos_concelho = Object.values(votes[concelho])
   console.log(votos_concelho);
-  
+
 
   var svg = d3.select("#lineChart")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", width + margin.left + margin.right + 100)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -214,8 +214,9 @@ var colorScale2 = d3.scaleOrdinal()
     }
   }
 
-  partidos_desenhados = []
-
+  partidos_desenhados = {}
+  //keys = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
+  //comentar a linha de cima quando nao testar
   for (part in keys) {
     svg.append("path")
     .datum(votos_concelho)
@@ -226,17 +227,43 @@ var colorScale2 = d3.scaleOrdinal()
     .attr("stroke-linecap", "round")
     .attr("d", d3.line()
       .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
-      .y((d) =>{ 
+      .y((d) =>{
         if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
           //console.log(keys[part])
-          if (!(partidos_desenhados.includes(keys[part]))){
-          partidos_desenhados.push(keys[part])}
+          if (keys[part] in partidos_desenhados == false){
+            partidos_desenhados[keys[part]] = d[keys[part]]
+          } else {
+            partidos_desenhados[keys[part]] += d[keys[part]]
+          }
           return y((d[keys[part]]/d.votos)*100);
-        } 
+        }
         else {return  y(0)}
       }))
     .append("title")
     .text(function () {return keys[part]});  //To do: adicionar circulos invisiveis nos pontos, e meter partido+número absoluto de votos
+  }
+
+  partidos_show = []
+  let length = 0;
+  for(i in partidos_desenhados) {
+    length += 1;
+  }
+
+  if (length > 5) {
+    length = 5
+  }
+
+  for(var j=0;j<length;j++) {
+    max = 0;
+    p = ""
+    for (i in partidos_desenhados) {
+      if (partidos_desenhados[i] > max) {
+        p = i;
+        max = partidos_desenhados[i];
+      }
+    }
+    partidos_show.push(p);
+    partidos_desenhados[p] = 0
   }
 
   //Title of X-Axis
@@ -244,7 +271,7 @@ var colorScale2 = d3.scaleOrdinal()
   .attr("text-anchor", "end")
   .attr("x", width - margin.right - 0)
   .attr("y", height + margin.top)
-  .text("Anos de Eleições");
+  .text("Election years");
 
   //Title of Y-Axis
   svg.append("text")
@@ -252,7 +279,7 @@ var colorScale2 = d3.scaleOrdinal()
   .attr("transform", "rotate(-90)")
   .attr("y", -margin.left+30)
   .attr("x", -margin.top)
-  .text("% de votos");
+  .text("% of votes");
 
   //Title of LineChart
   svg.append("text")
@@ -269,7 +296,7 @@ var colorScale2 = d3.scaleOrdinal()
     svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_desenhados[part])){console.log(partidos_desenhados[part], colorScale1(partidos_desenhados[part])); return colorScale1(partidos_desenhados[part])}else return colorScale2(partidos_desenhados[part])});  //paints the corresponding color
     svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){return partidos_desenhados[part]}).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
     spacing+=20
-    
+
   }}
 
 function handleClick(event, d) {
