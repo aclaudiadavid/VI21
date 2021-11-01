@@ -232,7 +232,6 @@ var colorScale2 = d3.scaleOrdinal()
       .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
       .y((d) =>{
         if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
-          //console.log(keys[part])
           if (keys[part] in partidos_desenhados == false){
             partidos_desenhados[keys[part]] = d[keys[part]]
           } else {
@@ -269,7 +268,6 @@ var colorScale2 = d3.scaleOrdinal()
     partidos_desenhados[p] = 0
   }
 
-  console.log(partidos_show);
   //Title of X-Axis
   svg.append("text")
   .attr("text-anchor", "end")
