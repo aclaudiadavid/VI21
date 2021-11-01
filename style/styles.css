@@ -9,6 +9,7 @@ div {
 }
 
 #form {
+    position: fixed;
     margin-top: 0px;
     margin-bottom: 0px;
     margin-right: 0px;
@@ -42,7 +43,35 @@ div {
     margin-right: 80px;
 }
 
-#rigth {
+#left {
+    position: sticky;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+#center {
+    flex-grow: 1;
+}
+
+#right {
+    margin-right: 30px;
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
+#parallel {
+    position: fixed;
+    transform: scale(1.2, 1.2);
+    top: 40px;
+    right: 650px;
+}
+
+#bar {
+    position: fixed;
+    transform: scale(0.8, 0.8);
+    top: 350px;
+    right: 500px;
 }
