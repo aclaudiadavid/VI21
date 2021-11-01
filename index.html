@@ -21,14 +21,19 @@
 	</head>
 
 	<body onload="init()">
-		<form id="form">
-			<input type="search" id="searchBar" name="searchBar" placeholder="Search municipalities..." aria-label="Search through site content">
-		</form>
-		<button id="all">Select All</button>
-		<button id="clear">Clear</button>
-		<ul id="municipalities"></ul>
-		<div id="map"></div>
-		<div id="stacked"></div>
-		<div id="lineChart"></div>
+		<div>
+			<form id="form">
+				<input type="search" id="searchBar" name="searchBar" placeholder="Search municipalities..." aria-label="Search through site content">
+			</form>
+			<button id="all">Select All</button>
+			<button id="clear">Clear</button>
+			<ul id="municipalities"></ul>
+			
+			<div id="map"></div>
+		</div>
+		<div id="right">
+			<div id="stacked"></div>
+			<div id="lineChart"></div>
+		</div>
 	</body>
 </html>
