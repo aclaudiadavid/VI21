@@ -196,6 +196,28 @@ function generate_line_chart(concelho) {
       .attr("d", d3.line()
         .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
         .y((d) => y((d.PS/d.votos)*100)));
+        
+     //Title of X-Axis
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("x", width - margin.right)
+     .attr("y", height + margin.top)
+     .text("Anos de Eleições");
+
+     //Title of Y-Axis
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("transform", "rotate(-90)")
+     .attr("y", -margin.left+20)
+     .attr("x", -margin.top)
+     .text("% de votos");
+  
+     //Title of LineChart
+  svg.append("text")
+     .attr("text-anchor", "end")
+     .attr("x", (margin.left + margin.right + width )/ 2)
+     .attr("y", 0)
+     .text("Cascais");
 
 }
 
