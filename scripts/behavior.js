@@ -208,8 +208,7 @@ var colorScale = d3.scaleOrdinal()
   }
 
   partidos_desenhados = []
-  //keys = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
-  //comentar a linha de cima quando nao testar 
+
   for (part in keys) {
     svg.append("path")
     .datum(votos_concelho)
@@ -228,7 +227,9 @@ var colorScale = d3.scaleOrdinal()
           return y((d[keys[part]]/d.votos)*100);
         } 
         else {return  y(0)}
-      }));
+      }))
+    .append("title")
+    .text(function () {return keys[part]});  //To do: adicionar circulos invisiveis nos pontos, e meter partido+número absoluto de votos
   }
   console.log(partidos_desenhados);
 
