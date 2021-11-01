@@ -9,7 +9,7 @@ var height = 200;
 
 list = []
 regions = []
-margin = { top: 20, right: 20, bottom: 20, left:40 };
+margin = { top: 20, right: 20, bottom: 20, left: 40 };
 
 function init() {
   d3.select("#all").on("click", all);
@@ -19,7 +19,12 @@ function init() {
 
 Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
     map2 = d[0];
-    votes = d[1];
+    votes = {};
+    votesRaw = {}
+    for(i in d[1]) {
+      votes[i.toUpperCase().replace(/\s+/g, '')] = d[1][i]
+      votesRaw[i.toUpperCase().replace(/\s+/g, '')] = i;
+    }
     generate_map();
     //generate_stacked();
     addZoom();
@@ -135,18 +140,19 @@ function generate_stacked() {
 }
 
 function add_line_charts(){
+  d3.select("#lineChart").selectAll("svg").remove()
+
   if (list.length != 0) {
     for (i in list) {
-      generate_line_chart(list[i].toLowerCase());
+      generate_line_chart(list[i]);
     }
   }
 }
 
 function generate_line_chart(concelho) {
   concelho = concelho.replace(/\s+/g, '');
-  console.log(concelho); //nao está em camel case e agora???
   var anos_eleicoes = Object.keys(votes[concelho]);
-  var votos_concelho = Object.values(votes[concelho]);
+  var votos_concelho = Object.values(votes[concelho])
 
   var svg = d3.select("#lineChart")
         .append("svg")
@@ -185,40 +191,56 @@ function generate_line_chart(concelho) {
 
   svg.append("g").call(yAxis);
 
-
-  svg.append("path")
-      .datum(votos_concelho)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("d", d3.line()
-        .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
-        .y((d) => y((d.PS/d.votos)*100)));
-        
-     //Title of X-Axis
-  svg.append("text")
-     .attr("text-anchor", "end")
-     .attr("x", width - margin.right)
-     .attr("y", height + margin.top)
-     .text("Anos de Eleições");
-
-     //Title of Y-Axis
-  svg.append("text")
-     .attr("text-anchor", "end")
-     .attr("transform", "rotate(-90)")
-     .attr("y", -margin.left+20)
-     .attr("x", -margin.top)
-     .text("% de votos");
+  keys = []
+  for(i in anos_eleicoes) {
+    for(part in votes[concelho][anos_eleicoes[i]]) {
+      if (part in keys == false) {
+        keys.push(part)
+      }
+    }
+  }
   
-     //Title of LineChart
-  svg.append("text")
-     .attr("text-anchor", "end")
-     .attr("x", (margin.left + margin.right + width )/ 2)
-     .attr("y", 0)
-     .text("Cascais");
+  for (part in keys) {
+    svg.append("path")
+    .datum(votos_concelho)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1.5)
+    .attr("stroke-linejoin", "round")
+    .attr("stroke-linecap", "round")
+    .attr("d", d3.line()
+      .x((d, i) => x(parseInt(anos_eleicoes[i],10)))
+      .y((d) =>{
+        if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
+          console.log(keys[part])
+          return y((d[keys[part]]/d.votos)*100);
+        } else {
+          return  y(0)
+        }
+      }));
+  }
 
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width - margin.right)
+  .attr("y", height + margin.top)
+  .text("Anos de Eleições");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left+30)
+  .attr("x", -margin.top)
+  .text("% de votos");
+
+  //Title of LineChart
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", (margin.left + margin.right + width )/ 2)
+  .attr("y", 0)
+  .text(votesRaw[concelho]);
 }
 
 function handleClick(event, d) {
@@ -234,9 +256,9 @@ function handleClick(event, d) {
 
     d3.select("#"+name)
       .attr("fill", "steelblue");
-
-      add_line_charts();
   }
+
+  add_line_charts();
 }
 
 function all() {
@@ -253,6 +275,8 @@ function clear() {
   .transition()
   .selectAll("path")
   .attr("fill", "black");
+
+  d3.select("#lineChart").selectAll("svg").remove()
 
   const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
