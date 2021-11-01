@@ -193,10 +193,20 @@ function generate_line_chart(concelho) {
   svg.append("g").call(yAxis);
 
 
-// Palete de cores - 1 cor por cada partido politico
-var colorScale = d3.scaleOrdinal()
-.domain(["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"])
+// Palete de cores - 1 cor por cada partido politico principal
+
+partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
+
+var colorScale1 = d3.scaleOrdinal()
+.domain(partidos_principais)
 .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6']);
+
+
+// Palete de cores secundária para partidos menores/coligações
+
+var colorScale2 = d3.scaleOrdinal()
+.domain([0,10])
+.range(['#16b311', '#ddb220', '#b14d14', '#ff0000', '#000000', '#af0f88', '#6d5b69', '#16d189', '#581845','#56ff00'])
 
   keys = []
   for(i in anos_eleicoes) {
@@ -214,7 +224,7 @@ var colorScale = d3.scaleOrdinal()
     svg.append("path")
     .datum(votos_concelho)
     .attr("fill", "none")
-    .attr("stroke", function(d) {return colorScale(keys[part])})
+    .attr("stroke", function(d) {if (partidos_principais.includes(keys[part])){return colorScale1(keys[part])}else return colorScale2(keys[part])})  
     .attr("stroke-width", 1.5)
     .attr("stroke-linejoin", "round")
     .attr("stroke-linecap", "round")
@@ -259,6 +269,7 @@ var colorScale = d3.scaleOrdinal()
     partidos_desenhados[p] = 0
   }
 
+  console.log(partidos_show);
   //Title of X-Axis
   svg.append("text")
   .attr("text-anchor", "end")
@@ -282,10 +293,12 @@ var colorScale = d3.scaleOrdinal()
   .text(votesRaw[concelho]);
 
 
-  var spacing = 0;
+  var spacing = 0; //espaçamento entre cada código de cor
+
   for (part in partidos_show) {
-    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {return colorScale(partidos_show[part])});  //paints the corresponding color
-    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){ return partidos_show[part] }).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
+    //Desenhar o círculo com a cor correspondente ao partido, e o nome do partido
+    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
+    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){return partidos_show[part]}).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
     spacing+=20
 
   }}
