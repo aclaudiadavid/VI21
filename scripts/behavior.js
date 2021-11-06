@@ -75,10 +75,17 @@ function search_bar() {
 
     if (searchString != "" && filteredMunicipalities.length < 5) {
       for (i in filteredMunicipalities) {
-        municipalitiesList.append("li").append("a").on("click", () => add(filteredMunicipalities[i])).text(filteredMunicipalities[i]);
+        var name = filteredMunicipalities[i]
+        searchList(municipalitiesList, name)
       }
     }
   });
+}
+
+function searchList(municipalitiesList,name){
+  municipalitiesList.append("li").append("a").on("click", function() {
+    add(name)
+  }).text(name);
 }
 
 function add(d) {
@@ -271,16 +278,18 @@ var colorScale2 = d3.scaleOrdinal()
   //Title of X-Axis
   svg.append("text")
   .attr("text-anchor", "end")
-  .attr("x", width - margin.right - 0)
-  .attr("y", height + margin.top)
+  .attr("x", width - margin.right)
+  .attr("y", height + 15)
+  .style("font-size", "13px")
   .text("Election years");
 
   //Title of Y-Axis
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left+30)
+  .attr("y", -margin.left + 40)
   .attr("x", -margin.top)
+  .style("font-size", "13px")
   .text("% of votes");
 
   //Title of LineChart
@@ -295,8 +304,8 @@ var colorScale2 = d3.scaleOrdinal()
 
   for (part in partidos_show) {
     //Desenhar o círculo com a cor correspondente ao partido, e o nome do partido
-    svg.append("circle").attr("cx",width-20).attr("cy",height-200+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
-    svg.append("text").attr("x", width).attr("y", height-200+spacing).text(function(){return partidos_show[part]}).style("font-size", "15px").attr("alignment-baseline","middle");  //writes the name of the party
+    svg.append("circle").attr("cx",width-20).attr("cy",height-160+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
+    svg.append("text").attr("x", width-10).attr("y", height-160+spacing).text(function(){return partidos_show[part]}).style("font-size", "11.5px").attr("alignment-baseline","middle");  //writes the name of the party
     spacing+=20
 
   }}
