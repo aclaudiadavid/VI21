@@ -26,6 +26,7 @@ Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
       votesRaw[i.toUpperCase().replace(/\s+/g, '')] = i;
     }
     generate_map();
+    all();
     //generate_stacked();
     addZoom();
   });
