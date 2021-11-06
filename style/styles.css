@@ -1,19 +1,26 @@
 body {
-    display: flex;
-    overflow-x: hidden; 
+  display: flex;
+  flex-direction: column;
 }
 
-div {
-    width: 50%;
-    float: left;
+.title {
+  display: inline-grid;
+  grid-template-columns: 33% 33% 33%
+}
+
+.body {
+    display: inline-grid;
+    grid-template-columns: 33% 33% 33%
+}
+
+h1 {
+  align-self: center;
+  place-self: center
 }
 
 #form {
-    position: fixed;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-left: 0px;
+    align-self: flex-start;
+    place-sef: center
 }
 
 #all{
@@ -34,7 +41,6 @@ div {
 }
 
 #map {
-    position: fixed;
     top: 130px;
 }
 
@@ -47,11 +53,12 @@ div {
     position: sticky;
     flex-direction: column;
     flex-grow: 1;
+    border-right: 2px solid;
 }
 
 #center {
-    flex-grow: 1;
-    align-items: flex-start;
+    align-self: center;
+    place-self: center;
 }
 
 #right {
@@ -60,17 +67,16 @@ div {
     flex-wrap: wrap;
     flex-direction: column;
     align-items: flex-end;
+    border-left: 2px solid;
 }
 
 #parallel {
-    position: fixed;
     transform: scale(1.2, 1.2);
     top: 40px;
     right: 650px;
 }
 
 #bar {
-    position: fixed;
     transform: scale(0.8, 0.8);
     top: 350px;
     right: 500px;

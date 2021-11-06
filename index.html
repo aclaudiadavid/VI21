@@ -21,25 +21,35 @@
 	</head>
 
 	<body onload="init()">
-		<div id = "left">
-			<div id="form">
-				<form>
-					<input type="search" id="searchBar" name="searchBar" placeholder="Search municipalities..." aria-label="Search through site content">
-				</form>
-				<button id="all">Select All</button>
-				<button id="clear">Clear</button>
-				<ul id="municipalities"></ul>
+		<div class="title">
+			<div class="search">
+				<div id="form">
+					<form>
+						<input type="search" id="searchBar" name="searchBar" placeholder="Search municipalities..." aria-label="Search through site content">
+					</form>
+					<button id="all">Select All</button>
+					<button id="clear">Clear</button>
+					<ul id="municipalities"></ul>
+				</div>
 			</div>
-			<div id="map"></div>
+			<h1>bla bla bla</h1>
+			<div>
+
+			</div>
 		</div>
-		<div id = "center">
-			<img id = "parallel" src="../img/parallel_coordinates.png" alt="Parallel Coordinates">
-			<img id = "bar" src="../img/bar_chart.png" alt="Bar Chart">
-		</div>
-		<div id="right">
-			<img id = "grouped" src="../img/grouped_stacked_bar_chart.png" alt="Grouped Stacked Bar Chart">
-			<div id="stacked"></div>
-			<div id="lineChart"></div>
+		<div class="body">
+			<div id = "left">
+				<div id="map"></div>
+			</div>
+			<div id = "center">
+				<img id = "parallel" src="../img/parallel_coordinates.png" alt="Parallel Coordinates">
+				<img id = "bar" src="../img/bar_chart.png" alt="Bar Chart">
+			</div>
+			<div id="right">
+				<img id = "grouped" src="../img/grouped_stacked_bar_chart.png" alt="Grouped Stacked Bar Chart">
+				<div id="stacked"></div>
+				<div id="lineChart"></div>
+			</div>
 		</div>
 	</body>
 </html>
