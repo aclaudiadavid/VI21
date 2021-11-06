@@ -2,23 +2,22 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: lighter;
 }
 
 .title {
   display: inline-grid;
   grid-template-columns: 20% 60% 20%;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: lighter;
 }
 
 .body {
     display: inline-grid;
-    grid-template-columns: 33% 33% 33%
+    grid-template-columns: 30% 34% 34%
 }
 
-h1 {
-  align-self: center;
-  place-self: center
+#title {
+    place-self: center
 }
 
 #form {
@@ -41,6 +40,9 @@ h1 {
 #municipalities {
     position: relative;
     top: -20px;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 #map {
@@ -75,7 +77,7 @@ h1 {
 
 #parallel {
     transform: scale(1.1, 1.1);
-    position: relative;
+    position: sticky;
     left: 120px;
 }
 

@@ -41,7 +41,7 @@ function generate_map() {
 
   svg = d3.select("#map")
     .append("svg")
-    .attr("width", 470)
+    .attr("width", 450)
     .attr("height", 690);
 
   svg.append("g")
@@ -57,7 +57,7 @@ function generate_map() {
     .on("click", handleClick)
     .append("title")
     .text(function (d) {
-      return d.properties.Concelho;
+      return votesRaw[d.properties.Concelho.replace(/\s+/g, '')];
     });
 }
 
@@ -69,14 +69,21 @@ function search_bar() {
     const searchString = e.target.value.toUpperCase();
 
     const filteredMunicipalities = regions.filter((Concelho) => {
-      return (Concelho.toUpperCase().includes(searchString.replace(/\s+/g, '')));
+      if (Concelho.toUpperCase().includes(searchString.replace(/\s+/g, ''))) {
+        return Concelho;
+      }
     });
+
+    for (i in filteredMunicipalities) {
+      filteredMunicipalities[i] = votesRaw[filteredMunicipalities[i]];
+    }
 
     municipalitiesList.selectAll("li").remove()
 
     if (searchString != "" && filteredMunicipalities.length < 5) {
       for (i in filteredMunicipalities) {
         var name = filteredMunicipalities[i]
+        console.log(filteredMunicipalities)
         searchList(municipalitiesList, name)
       }
     }
@@ -110,7 +117,6 @@ function generate_stacked() {
   //console.log(concelhos);
   var anos_eleicoes = Object.keys(votes["Portugal"]);
   var votos_portugal = votes["Portugal"];
-  console.log(votos_portugal);
 
   var svg = d3.select("#stacked")
     .append("svg")
@@ -160,12 +166,10 @@ function generate_line_chart(concelho) {
   concelho = concelho.replace(/\s+/g, '');
   var anos_eleicoes = Object.keys(votes[concelho]);
   var votos_concelho = Object.values(votes[concelho])
-  console.log(votos_concelho);
-
 
   var svg = d3.select("#lineChart")
         .append("svg")
-        .attr("width", width + margin.left + margin.right + 200)
+        .attr("width", width + margin.left + margin.right + 180)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -304,15 +308,20 @@ var colorScale2 = d3.scaleOrdinal()
   var spacing = 0; //espaçamento entre cada código de cor
 
   for (part in partidos_show) {
-    //Desenhar o círculo com a cor correspondente ao partido, e o nome do partido
-    svg.append("circle").attr("cx",width-20).attr("cy",height-160+spacing).attr("r", 6).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
-    svg.append("text").attr("x", width-10).attr("y", height-160+spacing).text(function(){return partidos_show[part]}).style("font-size", "11.5px").attr("alignment-baseline","middle");  //writes the name of the party
+    //Legend
+    svg.append("circle").attr("cx",width-20).attr("cy",height-140+spacing).attr("r", 5).style("fill", function(d) {if (partidos_principais.includes(partidos_show[part])){ return colorScale1(partidos_show[part])}else return colorScale2(partidos_show[part])});  //paints the corresponding color
+    svg.append("text").attr("x", width-10).attr("y", height-140+spacing).text(function(){return partidos_show[part]}).style("font-size", "11px").attr("alignment-baseline","middle");  //writes the name of the party
     spacing+=20
 
   }}
 
 function handleClick(event, d) {
   name = d.properties.Concelho.replace(/\s+/g, '');
+
+  if (list.includes("PORTUGAL")) {
+    clear();
+    handleClick(d);
+  }
 
   if (list.includes(d.properties.Concelho)) {
     list = list.filter((a) => a !== d.properties.Concelho)
@@ -347,10 +356,68 @@ function clear() {
   .selectAll("path")
   .attr("fill", "black");
 
-  d3.select("#lineChart").selectAll("svg").remove()
+  clear_line();
 
   const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
+}
+
+function clear_line() {
+  d3.select("#lineChart").selectAll("svg").remove();
+
+  var svg = d3.select("#lineChart")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right + 180)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  x = d3
+  .scaleLinear()
+  .domain([1993, 2017])
+  .nice()
+  .range([margin.left, width - margin.right]);
+
+  y = d3
+  .scaleLinear()
+  .domain([0,100])
+  .range([height -margin.bottom, margin.top]);
+
+  xAxis = (g) =>
+  g.attr("transform", `translate(0,${height - margin.bottom})`)
+      .call(
+          d3
+          .axisBottom(x)
+          .tickFormat((x) => x)
+          .tickValues(d3.range(1993, 2018, 4))
+      );
+  yAxis = (g) =>
+  g
+      .attr("transform", `translate(${margin.left},0)`)
+      .call(d3
+              .axisLeft(y)
+              .tickFormat((x) => x));
+
+  svg.append("g").call(xAxis);
+
+  svg.append("g").call(yAxis);
+
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width - margin.right)
+  .attr("y", height + 15)
+  .style("font-size", "13px")
+  .text("Election years");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left + 40)
+  .attr("x", -margin.top)
+  .style("font-size", "13px")
+  .text("% of votes");
 }
 
 function addZoom() {
