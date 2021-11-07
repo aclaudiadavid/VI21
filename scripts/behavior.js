@@ -183,7 +183,7 @@ function generate_line_chart(concelho) {
   y = d3
       .scaleLinear()
       .domain([0,100])
-      .range([height -margin.bottom, margin.top]);
+      .range([height - margin.bottom, margin.top]);
 
   xAxis = (g) =>
       g.attr("transform", `translate(0,${height - margin.bottom})`)
@@ -254,7 +254,29 @@ var colorScale2 = d3.scaleOrdinal()
         else {return  y(0)}
       }))
     .append("title")
-    .text(function () {return keys[part]});  //To do: adicionar circulos invisiveis nos pontos, e meter partido+número absoluto de votos
+    .text(function () {return keys[part]});
+  
+    svg.selectAll("myCircles")
+    .data(votos_concelho)
+    .enter()
+    .append("circle")
+      .attr("fill", "black")
+      .attr("stroke", "none")
+      .attr("cx", function(d, i) { return x(parseInt(anos_eleicoes[i],10)) })
+      .attr("cy", (d) =>{
+        if(d[keys[part]] != -1 && d[keys[part]] != null && keys[part] != "total" && keys[part] != "votos" && keys[part] != "abstencao" ) {
+          if (keys[part] in partidos_desenhados == false){
+            partidos_desenhados[keys[part]] = d[keys[part]]
+          } else {
+            partidos_desenhados[keys[part]] += d[keys[part]]
+          }
+          return y((d[keys[part]]/d.votos)*100);
+        }
+        else {return  y(0)}
+      })
+      .attr("r", 1.5)
+      .append("title")
+      .text(function (d) {return keys[part] + " " + d[keys[part]];});
   }
 
   partidos_show = []
