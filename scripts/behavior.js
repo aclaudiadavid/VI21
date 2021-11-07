@@ -97,15 +97,16 @@ function searchList(municipalitiesList,name){
 }
 
 function add(d) {
-  if (list.includes(d)) {
-    list.pop(d);
+  var name = d.toUpperCase();
+  if (list.includes(name)) {
+    list.pop(name);
 
-    d3.select("#"+d)
+    d3.select("#"+name)
       .attr("fill", "black");
   } else {
-    list.push(d);
+    list.push(name);
 
-    d3.select("#"+d)
+    d3.select("#"+name)
       .attr("fill", "steelblue");
   }
   add_line_charts();
@@ -153,17 +154,21 @@ function generate_stacked() {
 }
 
 function add_line_charts(){
-  d3.select("#lineChart").selectAll("svg").remove()
+  if (list.length == 0) {
+    clear_line();
+  } else {
+    d3.select("#lineChart").selectAll("svg").remove()
 
-  if (list.length != 0) {
-    for (i in list) {
-      generate_line_chart(list[i]);
+    if (list.length != 0) {
+      for (i in list) {
+        generate_line_chart(list[i]);
+      }
     }
   }
 }
 
 function generate_line_chart(concelho) {
-  concelho = concelho.replace(/\s+/g, '');
+  concelho = concelho.toUpperCase().replace(/\s+/g, '');
   var anos_eleicoes = Object.keys(votes[concelho]);
   var votos_concelho = Object.values(votes[concelho])
 
@@ -357,7 +362,6 @@ function handleClick(event, d) {
     d3.select("#"+name)
       .attr("fill", "steelblue");
   }
-
   add_line_charts();
 }
 
