@@ -2,6 +2,7 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  overflow-y: auto;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
@@ -60,8 +61,7 @@ body {
     position: sticky;
     flex-direction: column;
     flex-grow: 1;
-    align-self: center;
-    place-self: center;
+    align-self: flex-start;
 }
 
 #right {
@@ -77,12 +77,15 @@ body {
 #parallel {
     transform: scale(1.1, 1.1);
     position: relative;
-    left: 120px;
-    top: -35px;
+    left: 55px;
+    top: 15px;
 }
 
 #bar {
     transform: scale(0.7, 0.7);
+    position: relative;
+    left: -75px;
+    top: 30px;
 }
 
 #grouped {
