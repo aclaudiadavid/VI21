@@ -460,8 +460,8 @@ function handleClick(event, d) {
     handleClick(d);
   }
 
-  if (list.includes(d.properties.Concelho)) {
-    list = list.filter((a) => a !== d.properties.Concelho)
+  if (list.includes(d.properties.Concelho.replace(/\s+/g, ''))) {
+    list = list.filter((a) => a !== d.properties.Concelho.replace(/\s+/g, ''))
 
 
     d3.select("#"+name)
