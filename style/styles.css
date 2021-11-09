@@ -58,10 +58,7 @@ body {
 }
 
 #center {
-    position: sticky;
-    flex-direction: column;
-    flex-grow: 1;
-    align-self: flex-start;
+    display: grid;
 }
 
 #right {
@@ -75,10 +72,8 @@ body {
 }
 
 #parallel {
-    transform: scale(1.1, 1.1);
-    position: relative;
-    left: 55px;
-    top: 15px;
+    align-self: flex-start;
+    justify-self: center;
 }
 
 #bar {

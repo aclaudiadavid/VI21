@@ -17,7 +17,7 @@ var height = 200;
 list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
-year = 1993;
+year = 2009;
 
 function init() {
   d3.select("#all").on("click", all);
@@ -78,14 +78,13 @@ function generate_parallel() {
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .attr("id", "parallel-id")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Extract the list of dimensions we want to keep in the plot
   //PROBLEMA
-  dimensions = d3.keys(data).filter(function(d) { return d != "concelho" })
-
-  console.log(dimensions)
+  dimensions = Object.keys(data[0]).filter(function(d) { return d != "concelho" })
 
   // For each dimension, I build a linear scale. I store all in a y object
   var y = {}
@@ -99,7 +98,7 @@ function generate_parallel() {
   // Build the X scale -> it find the best position for each Y axis
   x = d3.scalePoint()
     .range([0, width])
-    .padding(1)
+    .padding(0.2)
     .domain(dimensions);
 
   // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
@@ -113,8 +112,9 @@ function generate_parallel() {
     .data(data)
     .enter().append("path")
     .attr("d",  path)
+    .attr("id", (d) => {return d.concelho})
     .style("fill", "none")
-    .style("stroke", "#69b3a2")
+    .style("stroke", "steelblue")
     .style("opacity", 0.5)
 
   // Draw the axis:
@@ -234,7 +234,6 @@ function search_bar() {
     if (searchString != "" && filteredMunicipalities.length < 5) {
       for (i in filteredMunicipalities) {
         var name = filteredMunicipalities[i]
-        console.log(filteredMunicipalities)
         searchList(municipalitiesList, name)
       }
     }
@@ -248,7 +247,7 @@ function searchList(municipalitiesList,name){
 }
 
 function add(d) {
-  var name = d.toUpperCase();
+  var name = d.toUpperCase().replace(/\s+/g, '');
   if (list.includes(name)) {
     list.pop(name);
 
@@ -261,6 +260,7 @@ function add(d) {
       .attr("fill", "steelblue");
   }
   add_line_charts();
+  changeParallel()
 }
 
 function add_line_charts(){
@@ -467,12 +467,36 @@ function handleClick(event, d) {
     d3.select("#"+name)
       .attr("fill", null);
   } else {
-    list.push(d.properties.Concelho);
+    list.push(name);
 
     d3.select("#"+name)
       .attr("fill", "steelblue");
   }
   add_line_charts();
+  changeParallel();
+}
+
+
+function changeParallel() {
+  d3.select("#parallel-id")
+  .selectAll("g")
+  .selectAll("path")
+  .style("stroke", "grey")
+  .style("opacity", 0.1)
+
+  for (i in list) {
+    d3.select("#parallel-id")
+    .selectAll("g")
+    .selectAll("path")
+    .filter((d) => {
+      if(d != null) {
+        return d["concelho"] == list[i]
+      }
+    })
+    .style("stroke", "steelblue")
+    .style('opacity', 1)
+    .style("stroke-width", 3)
+  }
 }
 
 function all() {
@@ -483,6 +507,12 @@ function all() {
   .selectAll("path")
   .attr("fill", "steelblue");
 
+  d3.select("#parallel-id")
+  .selectAll("g")
+  .selectAll("path")
+  .style("stroke", "steelblue")
+  .style("opacity", 0.5)
+
   add_line_charts();
 }
 
@@ -490,7 +520,16 @@ function clear() {
   d3.select("#map")
   .transition()
   .selectAll("path")
-  .attr("fill", "black");
+  .attr("fill", "black")
+
+  d3.select("#parallel-id")
+  .selectAll("g")
+  .selectAll("path")
+  .style("stroke", "grey")
+  .style("opacity", 0.5)
+
+  d3.select(".axis")
+    .style("stroke", "black")
 
   clear_line();
 
@@ -560,17 +599,20 @@ function getDataYear(year) {
   var data = []
 
   for (i in votesRaw) {
-    c = votesRaw[i];
     concelho = {}
-    concelho["crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-    concelho["desempregados"] = parallel_values[1][c][year] != null? parallel_values[0][c][year]:-1
-    concelho["estrangeiros"] = parallel_values[2][c][year] != null? parallel_values[0][c][year]:-1
-    concelho["envelhecimento"] = parallel_values[3][c][year] != null? parallel_values[0][c][year]:-1
-    concelho["educacao"] = parallel_values[4][c][year] != null? parallel_values[0][c][year]:-1
-    concelho["compra"] = parallel_values[5][c][year] != null? parallel_values[0][c][year]:-1
+    if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
+      c = votesRaw[i];
+      concelho["concelho"] = i;
+      concelho["crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      concelho["empregados"] = parallel_values[1][c][year] != null? parallel_values[1][c][year]:-1
+      concelho["estrangeiros"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
+      concelho["envelhecimento"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
+      concelho["educacao"] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
+      concelho["compra"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
 
-    data.push(concelho)
+      data.push(concelho)
     }
+  }
 
   return data
 }
