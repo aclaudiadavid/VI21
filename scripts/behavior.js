@@ -187,7 +187,7 @@ function generate_stacked() {
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
   .attr("y", -margin.left + 10)
-  .attr("x", -margin.top + 25
+  .attr("x", -margin.top + 25)
   .style("font-size", "13px")
   .text("% of votes");
 
