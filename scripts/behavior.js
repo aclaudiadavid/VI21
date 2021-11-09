@@ -26,8 +26,9 @@ Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
       votesRaw[i.toUpperCase().replace(/\s+/g, '')] = i;
     }
     generate_map();
-    all();
+    //generate_parallel();
     //generate_stacked();
+    all();
     addZoom();
   });
 
@@ -59,6 +60,143 @@ function generate_map() {
     .text(function (d) {
       return votesRaw[d.properties.Concelho.replace(/\s+/g, '')];
     });
+}
+
+function generate_parallel() {
+  var svg = d3.select("#parallel")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  // Extract the list of dimensions we want to keep in the plot
+  //PROBLEMA
+  dimensions = d3.keys(data[0]).filter(function(d) { return d != "Species" })
+
+  // For each dimension, I build a linear scale. I store all in a y object
+  var y = {}
+  for (i in dimensions) {
+    name = dimensions[i]
+    y[name] = d3.scaleLinear()
+      .domain( d3.extent(data, function(d) { return +d[name]; }) )
+      .range([height, 0])
+  }
+
+  // Build the X scale -> it find the best position for each Y axis
+  x = d3.scalePoint()
+    .range([0, width])
+    .padding(1)
+    .domain(dimensions);
+
+  // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
+  function path(d) {
+      return d3.line()(dimensions.map(function(p) { return [x(p), y[p](d[p])]; }));
+  }
+
+  // Draw the lines
+  svg
+    .selectAll("myPath")
+    .data(data)
+    .enter().append("path")
+    .attr("d",  path)
+    .style("fill", "none")
+    .style("stroke", "#69b3a2")
+    .style("opacity", 0.5)
+
+  // Draw the axis:
+  svg.selectAll("myAxis")
+    // For each dimension of the dataset I add a 'g' element:
+    .data(dimensions).enter()
+    .append("g")
+    // I translate this element to its right position on the x axis
+    .attr("transform", function(d) { return "translate(" + x(d) + ")"; })
+    // And I build the axis with the call function
+    .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
+    // Add axis title
+    .append("text")
+      .style("text-anchor", "middle")
+      .attr("y", -9)
+      .text(function(d) { return d; })
+      .style("fill", "black")
+}
+
+function generate_stacked() {
+  var anos_eleicoes = Object.keys(votes["PORTUGAL"]);
+  var votos_portugal = votes["PORTUGAL"];
+
+  var svg = d3.select("#grouped")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)  
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add X axis
+    var x = d3.scaleBand()
+    .domain(anos_eleicoes)
+    .range([0, width])
+    .padding([0.2])
+    
+    svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
+    
+    svg.append("g")
+    .call(d3.axisLeft(y));
+
+    // color palette = one color per subgroup
+    var color = d3.scaleOrdinal()
+    .domain(["votos", "abstencao"])
+    .range(['#e41a1c','#377eb8']);
+
+    var stackedData = d3.stack()
+    .keys(["votos", "abstencao"]);
+
+    //var dt = stackedData(votos_portugal);
+
+    svg.append("g")
+    .selectAll("g")
+    //.data(stackedData)
+    .enter().append("g")
+      .attr("fill", function(d) { return color(d.key); })
+      .selectAll("rect")
+      // enter a second time = loop subgroup per subgroup to add all rectangles
+      .data(function(d) { return d; })
+      .enter().append("rect")
+        .attr("x", function(d) { return x(d.data.group); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width",x.bandwidth())
+
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width - margin.right)
+  .attr("y", height + 25)
+  .style("font-size", "13px")
+  .text("Election years");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left + 10)
+  .attr("x", -margin.top + 25
+  .style("font-size", "13px")
+  .text("% of votes");
+
+  //Title of LineChart
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", (margin.left + margin.right + width )/ 2)
+  .attr("y", 0)
+  .text("Portugal");  
 }
 
 function search_bar() {
@@ -110,47 +248,6 @@ function add(d) {
       .attr("fill", "steelblue");
   }
   add_line_charts();
-}
-
-function generate_stacked() {
-
-  //var concelhos = Object.keys(votes);
-  //console.log(concelhos);
-  var anos_eleicoes = Object.keys(votes["Portugal"]);
-  var votos_portugal = votes["Portugal"];
-
-  var svg = d3.select("#stacked")
-    .append("svg")
-    .attr("width", width - 50 + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // Add X axis
-    var x = d3.scaleBand()
-    .domain(anos_eleicoes)
-    .range([0, width])
-    .padding([0.2])
-    svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickSizeOuter(0));
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-    .domain([0, 100])
-    .range([ height, 0 ]);
-    svg.append("g")
-    .call(d3.axisLeft(y));
-
-    // color palette = one color per subgroup
-    var color = d3.scaleOrdinal()
-    .domain(["votos", "abstencao"])
-    .range(['#e41a1c','#377eb8']);
-
-    var stackedData = d3.stack()
-    .keys(["votos", "abstencao"]);
-
-    var dt = stackedData(votos_portugal);
 }
 
 function add_line_charts(){
