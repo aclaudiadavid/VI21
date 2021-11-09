@@ -36,7 +36,7 @@ Promise.all([d3.json(map), d3.json(tvotes), d3.json(crime),d3.json(desemp),d3.js
     parallel_values = d.slice(2)
     generate_map();
     generate_parallel();
-    //generate_stacked();
+    generate_stacked();
     all();
     addZoom();
   });
@@ -83,7 +83,6 @@ function generate_parallel() {
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Extract the list of dimensions we want to keep in the plot
-  //PROBLEMA
   dimensions = Object.keys(data[0]).filter(function(d) { return d != "concelho" })
 
   // For each dimension, I build a linear scale. I store all in a y object
@@ -98,7 +97,6 @@ function generate_parallel() {
   // Build the X scale -> it find the best position for each Y axis
   x = d3.scalePoint()
     .range([0, width])
-    .padding(0.2)
     .domain(dimensions);
 
   // The path function take a row of the csv as input, and return x and y coordinates of the line to draw for this raw.
@@ -168,6 +166,7 @@ function generate_stacked() {
     .domain(["votos", "abstencao"])
     .range(['#e41a1c','#377eb8']);
 
+    console.log(votos_portugal);
     var stackedData = d3.stack()
     .keys(["votos", "abstencao"]);
 
@@ -175,11 +174,10 @@ function generate_stacked() {
 
     svg.append("g")
     .selectAll("g")
-    //.data(stackedData)
+    .data(stackedData)
     .enter().append("g")
       .attr("fill", function(d) { return color(d.key); })
       .selectAll("rect")
-      // enter a second time = loop subgroup per subgroup to add all rectangles
       .data(function(d) { return d; })
       .enter().append("rect")
         .attr("x", function(d) { return x(d.data.group); })
@@ -391,7 +389,7 @@ var colorScale2 = d3.scaleOrdinal()
       })
       .attr("r", 1.5)
       .append("title")
-      .text(function (d) {return keys[part] + " " + d[keys[part]];});
+      .text(function (d) {return keys[part] + " Votes: " + d[keys[part]];});
   }
 
   partidos_show = []
@@ -603,12 +601,12 @@ function getDataYear(year) {
     if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["empregados"] = parallel_values[1][c][year] != null? parallel_values[1][c][year]:-1
-      concelho["estrangeiros"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
-      concelho["envelhecimento"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
-      concelho["educacao"] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
-      concelho["compra"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
+      concelho["% Crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year]:-1
+      concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
+      concelho["Seniors/100 Working-age"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
+      concelho["% College Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
+      concelho["Purchasing Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
 
       data.push(concelho)
     }
