@@ -1,5 +1,12 @@
 var map = "/data/ContinenteConcelhos.json"; //world view
 var tvotes = "/data/resultados_eleicoes.json";
+var desemp = "/data/desempregados_inscritos.json"
+var crime = "/data/crime_registado.json"
+var estran = "/data/estrangeiros_residentes_percentagem.json"
+var velho = "/data/indice_envelhecimento.json"
+var edu = "/data/nivel_educacao.json"
+var compra = "/data/poder_compra.json"
+
 
 var map2;
 var votes;
@@ -10,6 +17,7 @@ var height = 200;
 list = []
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
+year = 1993;
 
 function init() {
   d3.select("#all").on("click", all);
@@ -17,7 +25,7 @@ function init() {
   search_bar()
 }
 
-Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
+Promise.all([d3.json(map), d3.json(tvotes), d3.json(crime),d3.json(desemp),d3.json(estran),d3.json(velho),d3.json(edu),d3.json(compra)]).then(function (d) {
     map2 = d[0];
     votes = {};
     votesRaw = {}
@@ -25,8 +33,9 @@ Promise.all([d3.json(map), d3.json(tvotes)]).then(function (d) {
       votes[i.toUpperCase().replace(/\s+/g, '')] = d[1][i]
       votesRaw[i.toUpperCase().replace(/\s+/g, '')] = i;
     }
+    parallel_values = d.slice(2)
     generate_map();
-    //generate_parallel();
+    generate_parallel();
     //generate_stacked();
     all();
     addZoom();
@@ -63,6 +72,8 @@ function generate_map() {
 }
 
 function generate_parallel() {
+  data = getDataYear(year)
+
   var svg = d3.select("#parallel")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -72,7 +83,9 @@ function generate_parallel() {
 
   // Extract the list of dimensions we want to keep in the plot
   //PROBLEMA
-  dimensions = d3.keys(data[0]).filter(function(d) { return d != "Species" })
+  dimensions = d3.keys(data).filter(function(d) { return d != "concelho" })
+
+  console.log(dimensions)
 
   // For each dimension, I build a linear scale. I store all in a y object
   var y = {}
@@ -128,7 +141,7 @@ function generate_stacked() {
   var svg = d3.select("#grouped")
     .append("svg")
     .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)  
+    .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -137,7 +150,7 @@ function generate_stacked() {
     .domain(anos_eleicoes)
     .range([0, width])
     .padding([0.2])
-    
+
     svg.append("g")
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x).tickSizeOuter(0));
@@ -146,7 +159,7 @@ function generate_stacked() {
     var y = d3.scaleLinear()
     .domain([0, 100])
     .range([ height, 0 ]);
-    
+
     svg.append("g")
     .call(d3.axisLeft(y));
 
@@ -196,7 +209,7 @@ function generate_stacked() {
   .attr("text-anchor", "end")
   .attr("x", (margin.left + margin.right + width )/ 2)
   .attr("y", 0)
-  .text("Portugal");  
+  .text("Portugal");
 }
 
 function search_bar() {
@@ -357,7 +370,7 @@ var colorScale2 = d3.scaleOrdinal()
       }))
     .append("title")
     .text(function () {return keys[part]});
-  
+
     svg.selectAll("myCircles")
     .data(votos_concelho)
     .enter()
@@ -541,6 +554,25 @@ function clear_line() {
   .attr("x", -margin.top)
   .style("font-size", "13px")
   .text("% of votes");
+}
+
+function getDataYear(year) {
+  var data = []
+
+  for (i in votesRaw) {
+    c = votesRaw[i];
+    concelho = {}
+    concelho["crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+    concelho["desempregados"] = parallel_values[1][c][year] != null? parallel_values[0][c][year]:-1
+    concelho["estrangeiros"] = parallel_values[2][c][year] != null? parallel_values[0][c][year]:-1
+    concelho["envelhecimento"] = parallel_values[3][c][year] != null? parallel_values[0][c][year]:-1
+    concelho["educacao"] = parallel_values[4][c][year] != null? parallel_values[0][c][year]:-1
+    concelho["compra"] = parallel_values[5][c][year] != null? parallel_values[0][c][year]:-1
+
+    data.push(concelho)
+    }
+
+  return data
 }
 
 function addZoom() {
