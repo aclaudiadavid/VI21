@@ -34,6 +34,7 @@ Promise.all([d3.json(map), d3.json(tvotes), d3.json(crime),d3.json(desemp),d3.js
       votesRaw[i.toUpperCase().replace(/\s+/g, '')] = i;
     }
     parallel_values = d.slice(2)
+    yearF()
     generate_map();
     generate_parallel();
     generate_bar();
@@ -41,6 +42,33 @@ Promise.all([d3.json(map), d3.json(tvotes), d3.json(crime),d3.json(desemp),d3.js
     all();
     addZoom();
   });
+
+function yearF() {
+  d3.select("#year").select("h2").remove()
+  d3.select("#year").append("h2").attr("id", "year-h2").text(year)
+}
+
+function yearDown() {
+  year -= 4
+
+  if (year<1993) {
+    year = 1993
+  }
+
+  yearF()
+  generate_parallel()
+}
+
+function yearUp() {
+  year += 4;
+
+  if (year>2017) {
+    year = 2017
+  }
+
+  yearF()
+  generate_parallel()
+}
 
 function generate_map() {
   var projection = d3
@@ -73,6 +101,8 @@ function generate_map() {
 }
 
 function generate_parallel() {
+  d3.select("#parallel").select("svg").remove()
+
   data = getDataYear(year)
 
   var svg = d3.select("#parallel")
@@ -203,8 +233,11 @@ function generate_stacked() {
     d3.select("#grouped").select("svg").remove()
 
     var loc = list[0];
-    var anos_eleicoes = Object.keys(votes[loc]);
-    var votos_portugal = votes[loc];
+    var anos_eleicoes = Object.keys(votes["PORTUGAL"])
+    var votos_portugal = []
+    for(i in list) {
+      votos_portugal.push(votes[list[i]]);
+    }
 
     var svg = d3.select("#grouped")
       .append("svg")
@@ -213,11 +246,45 @@ function generate_stacked() {
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // Add X axis
+      // color palette = one color per subgroup
+      var color = d3.scaleOrdinal()
+      .domain(["votos", "abstencao"])
+      .range(['#e41a1c','#377eb8']);
+
+      var data = []
+      /*for(i in votos_portugal) {
+        for(j in anos_eleicoes) {
+          total = votos_portugal[i][anos_eleicoes[j]]["total"];
+          data.push({"loc": list[i], "ano": anos_eleicoes[j], "votos": (votos_portugal[i][anos_eleicoes[j]]["votos"]/total)*100, "abstencao": (votos_portugal[i][anos_eleicoes[j]]["abstencoes"]/total)*100})
+        }
+      }
+
+      console.log(data)*/
+
+      for(i in anos_eleicoes) {
+        var d = {}
+        d["ano"] = anos_eleicoes[i]
+        for (j in votos_portugal) {
+          total = votos_portugal[j][anos_eleicoes[i]]["total"]
+          d[list[j]] = [0,(votos_portugal[j][anos_eleicoes[i]]["votos"]/total)*100]
+          //d[list[j]] = [(votos_portugal[j][anos_eleicoes[i]]["votos"]/total)*100, 100]
+        }
+
+        data.push(d)
+      }
+
+      var subgroups = list;
+      var groups = d3.map(data, function(d){return d.ano})
+
       var x = d3.scaleBand()
       .domain(anos_eleicoes)
       .range([0, width])
       .padding([0.2])
+
+      var xSubgroup = d3.scaleBand()
+      .domain(list)
+      .range([0, x.bandwidth()])
+      .padding([0.1])
 
       svg.append("g")
       .attr("transform", "translate(0," + height + ")")
@@ -231,34 +298,32 @@ function generate_stacked() {
       svg.append("g")
       .call(d3.axisLeft(y));
 
-      // color palette = one color per subgroup
-      var color = d3.scaleOrdinal()
-      .domain(["votos", "abstencao"])
-      .range(['#e41a1c','#377eb8']);
-
-      var data = []
-      for(i in anos_eleicoes) {
-        total = votos_portugal[anos_eleicoes[i]]["total"]
-        data.push({"ano": anos_eleicoes[i], "votos": (votos_portugal[anos_eleicoes[i]]["votos"]/total)*100, "abstencao": (votos_portugal[anos_eleicoes[i]]["abstencao"]/total)*100})
-      }
-
       var stackedData = d3.stack()
       .keys(["votos", "abstencao"]);
 
       var dt = stackedData(data);
 
+      console.log(dt)
+
+      // Show the bars
+      // Show the bars
       svg.append("g")
-      .selectAll("g")
-      .data(dt)
-      .enter().append("g")
-        .attr("fill", function(d) { return color(d.key); })
+        .selectAll("g")
+        // Enter in data = loop group per group
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("transform", function(d) {console.log(d); return "translate(" + x(d.ano) + ",0)"; })
         .selectAll("rect")
-        .data(function(d) { return d; })
+        .data(function(d) { return subgroups.map(function(key) {return {key: key, value: d[key]}; }); })
         .enter().append("rect")
-          .attr("x", function(d) { return x(d.data.ano); })
-          .attr("y", function(d) { return y(d[1]); })
-          .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-          .attr("width",x.bandwidth())
+        .attr("x", function(d) { return xSubgroup(d.key); })
+        .attr("y", function(d) { return y(d.value[1]); })
+        .attr("y0", function(d) {return y(d.value[0]);})
+        .attr("width", xSubgroup.bandwidth())
+        .attr("height", function(d) { return height - y(d.value[1]); })
+        .attr("fill", function(d) { return color(d.key); });
+
 
     //Title of X-Axis
     svg.append("text")

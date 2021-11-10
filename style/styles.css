@@ -60,6 +60,35 @@ body {
 
 #center {
     display: grid;
+    grid-template-rows: 10% 45% 45%
+}
+
+#year-div {
+  align-self: flex-start;
+  display: grid;
+  grid-template-columns: 33% 33% 33%
+}
+
+#year{
+  align-self: center;
+  align-items: center;
+  justify-content: center;
+}
+
+#arrow-left {
+  align-self: center;
+  justify-self: flex-end;
+  transform: scaleX(-1);
+}
+
+#arrow-right {
+  align-self: center;
+  justify-self: flex-start;
+}
+
+#year{
+  align-self: center;
+  justify-self: center;
 }
 
 #right {
