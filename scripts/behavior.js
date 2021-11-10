@@ -14,7 +14,7 @@ var votes;
 var width = 400;
 var height = 200;
 
-list = []
+list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
 year = 2009;
@@ -133,81 +133,93 @@ function generate_parallel() {
 }
 
 function generate_stacked() {
-  var anos_eleicoes = Object.keys(votes["PORTUGAL"]);
-  var votos_portugal = votes["PORTUGAL"];
+  if(list.length == 0) {
+    clearGroup();
+  } else {
+    d3.select("#grouped").select("svg").remove()
 
-  var svg = d3.select("#grouped")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var loc = list[0];
+    var anos_eleicoes = Object.keys(votes[loc]);
+    var votos_portugal = votes[loc];
 
-    // Add X axis
-    var x = d3.scaleBand()
-    .domain(anos_eleicoes)
-    .range([0, width])
-    .padding([0.2])
+    var svg = d3.select("#grouped")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + 20 + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-    svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickSizeOuter(0));
+      // Add X axis
+      var x = d3.scaleBand()
+      .domain(anos_eleicoes)
+      .range([0, width])
+      .padding([0.2])
 
-    // Add Y axis
-    var y = d3.scaleLinear()
-    .domain([0, 100])
-    .range([ height, 0 ]);
+      svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).tickSizeOuter(0));
 
-    svg.append("g")
-    .call(d3.axisLeft(y));
+      // Add Y axis
+      var y = d3.scaleLinear()
+      .domain([0, 100])
+      .range([ height, 0 ]);
 
-    // color palette = one color per subgroup
-    var color = d3.scaleOrdinal()
-    .domain(["votos", "abstencao"])
-    .range(['#e41a1c','#377eb8']);
+      svg.append("g")
+      .call(d3.axisLeft(y));
 
-    console.log(votos_portugal);
-    var stackedData = d3.stack()
-    .keys(["votos", "abstencao"]);
+      // color palette = one color per subgroup
+      var color = d3.scaleOrdinal()
+      .domain(["votos", "abstencao"])
+      .range(['#e41a1c','#377eb8']);
 
-    //var dt = stackedData(votos_portugal);
+      var data = []
+      for(i in anos_eleicoes) {
+        total = votos_portugal[anos_eleicoes[i]]["total"]
+        data.push({"ano": anos_eleicoes[i], "votos": (votos_portugal[anos_eleicoes[i]]["votos"]/total)*100, "abstencao": (votos_portugal[anos_eleicoes[i]]["abstencao"]/total)*100})
+      }
 
-    svg.append("g")
-    .selectAll("g")
-    .data(stackedData)
-    .enter().append("g")
-      .attr("fill", function(d) { return color(d.key); })
-      .selectAll("rect")
-      .data(function(d) { return d; })
-      .enter().append("rect")
-        .attr("x", function(d) { return x(d.data.group); })
-        .attr("y", function(d) { return y(d[1]); })
-        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-        .attr("width",x.bandwidth())
+      var stackedData = d3.stack()
+      .keys(["votos", "abstencao"]);
 
-  //Title of X-Axis
-  svg.append("text")
-  .attr("text-anchor", "end")
-  .attr("x", width - margin.right)
-  .attr("y", height + 25)
-  .style("font-size", "13px")
-  .text("Election years");
+      var dt = stackedData(data);
 
-  //Title of Y-Axis
-  svg.append("text")
-  .attr("text-anchor", "end")
-  .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 10)
-  .attr("x", -margin.top + 25)
-  .style("font-size", "13px")
-  .text("% of votes");
+      svg.append("g")
+      .selectAll("g")
+      .data(dt)
+      .enter().append("g")
+        .attr("fill", function(d) { return color(d.key); })
+        .selectAll("rect")
+        .data(function(d) { return d; })
+        .enter().append("rect")
+          .attr("x", function(d) { return x(d.data.ano); })
+          .attr("y", function(d) { return y(d[1]); })
+          .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+          .attr("width",x.bandwidth())
 
-  //Title of LineChart
-  svg.append("text")
-  .attr("text-anchor", "end")
-  .attr("x", (margin.left + margin.right + width )/ 2)
-  .attr("y", 0)
-  .text("Portugal");
+    //Title of X-Axis
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", width - margin.right)
+    .attr("y", height + 25)
+    .style("font-size", "13px")
+    .text("Election years");
+
+    //Title of Y-Axis
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -margin.left + 10)
+    .attr("x", -margin.top + 25)
+    .style("font-size", "13px")
+    .text("% of votes");
+
+    //Title of LineChart
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", (margin.left + margin.right + width )/ 2)
+    .attr("y", 0)
+    .text(votesRaw[loc]);
+  }
 }
 
 function search_bar() {
@@ -258,7 +270,8 @@ function add(d) {
       .attr("fill", "steelblue");
   }
   add_line_charts();
-  changeParallel()
+  changeParallel();
+  generate_stacked();
 }
 
 function add_line_charts(){
@@ -472,6 +485,7 @@ function handleClick(event, d) {
   }
   add_line_charts();
   changeParallel();
+  generate_stacked();
 }
 
 
@@ -530,6 +544,7 @@ function clear() {
     .style("stroke", "black")
 
   clear_line();
+  clearGroup();
 
   const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
@@ -589,6 +604,52 @@ function clear_line() {
   .attr("transform", "rotate(-90)")
   .attr("y", -margin.left + 40)
   .attr("x", -margin.top)
+  .style("font-size", "13px")
+  .text("% of votes");
+}
+
+function clearGroup() {
+  d3.select("#grouped").select("svg").remove()
+
+  var svg = d3.select("#grouped")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + 20 + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add X axis
+    var x = d3.scaleBand()
+    .domain(Object.keys(votes["PORTUGAL"]))
+    .range([0, width])
+    .padding([0.2])
+
+    svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
+
+    svg.append("g")
+    .call(d3.axisLeft(y));
+
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width - margin.right)
+  .attr("y", height + 25)
+  .style("font-size", "13px")
+  .text("Election years");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left + 10)
+  .attr("x", -margin.top + 25)
   .style("font-size", "13px")
   .text("% of votes");
 }
