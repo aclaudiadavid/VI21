@@ -78,10 +78,8 @@ body {
 }
 
 #bar {
-    transform: scale(0.7, 0.7);
-    position: relative;
-    left: -75px;
-    top: 30px;
+    align-self: flex-start;
+    justify-self: center;
 }
 
 #grouped {
