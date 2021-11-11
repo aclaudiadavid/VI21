@@ -190,9 +190,8 @@ function generate_stacked() {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // color palette = one color per subgroup
-      var color = d3.scaleOrdinal()
-      .domain(["votos", "abstencao"])
-      .range(['#e41a1c','#377eb8']);
+      /*var color = d3.scaleSequential(d3.interpolateInferno)
+      .domain([0, width])*/
 
       var data = []
       /*for(i in votos_portugal) {
@@ -265,7 +264,7 @@ function generate_stacked() {
         .attr("y0", function(d) {return y(d.value[0]);})
         .attr("width", xSubgroup.bandwidth())
         .attr("height", function(d) { return height - y(d.value[1]); })
-        .attr("fill", function(d) { return color(d.key); });
+        //.attr("fill", function(d, i) { return color(d); });
 
 
     //Title of X-Axis
@@ -865,6 +864,23 @@ function clearBar() {
   svg.append("g")
     .attr("transform", "translate(" + (width-10) + " ,0)")
     .call(d3.axisRight(y1));
+
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width + 20)
+  .attr("y", height + 40)
+  .style("font-size", "13px")
+  .text("Municipalities");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left + 10)
+  .attr("x", -margin.top + 25)
+  .style("font-size", "13px")
+  .text("% of votes on winning party");
 }
 
 function clear_line() {
