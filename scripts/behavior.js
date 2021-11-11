@@ -143,7 +143,7 @@ function generate_parallel() {
     .attr("d",  path)
     .attr("id", (d) => {return d.concelho})
     .style("fill", "none")
-    .style("stroke", "steelblue")
+    .style("stroke", () => {if (list.length != 0) {return "steelblue"} else {return "grey"}} )
     .style("opacity", 0.5)
 
   // Draw the axis:
@@ -266,7 +266,7 @@ function generate_stacked() {
     svg.append("text")
     .attr("text-anchor", "end")
     .attr("x", width - margin.right)
-    .attr("y", height + 25)
+    .attr("y", height + 30)
     .style("font-size", "13px")
     .text("Election years");
 
@@ -285,6 +285,11 @@ function generate_stacked() {
     .attr("x", (margin.left + margin.right + width )/ 2)
     .attr("y", 0)
     .text(votesRaw[loc]);
+
+    /*
+    svg.append("circle").attr("cx",width + margin.left).attr("cy",height-140).attr("r", 5).style("fill", red);
+    svg.append("text").attr("x", width).attr("y", height-140).text("Voting participation").style("font-size", "11px").attr("alignment-baseline","middle");
+      */
   }
 }
 
@@ -669,7 +674,7 @@ var colorScale2 = d3.scaleOrdinal()
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("x", width - margin.right)
-  .attr("y", height + 15)
+  .attr("y", height + 10)
   .style("font-size", "13px")
   .text("Election years");
 
@@ -877,7 +882,7 @@ function clear_line() {
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("x", width - margin.right)
-  .attr("y", height + 15)
+  .attr("y", height + 10)
   .style("font-size", "13px")
   .text("Election years");
 
@@ -923,7 +928,7 @@ function clearGroup() {
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("x", width - margin.right)
-  .attr("y", height + 25)
+  .attr("y", height + 30)
   .style("font-size", "13px")
   .text("Election years");
 
@@ -945,12 +950,12 @@ function getDataYear(year) {
     if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["% Crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year]:-1
+      concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year] * 100:-1
       concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
-      concelho["Seniors/100 Working-age"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
-      concelho["% College Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
-      concelho["Purchasing Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
+      concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
+      concelho["% Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]*100:-1
+      concelho["Purch. Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]/100:-1
 
       data.push(concelho)
     }
