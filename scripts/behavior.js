@@ -15,10 +15,12 @@ var width = 400;
 var height = 200;
 
 var attribute;
+var attrPos = ["crime", "employed", "imigrants", "seniors", "education", "power"]
 list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
 year = 2009;
+var selector = [year, year, year, year, "total", year]
 
 function init() {
   d3.select("#all").on("click", all);
@@ -383,13 +385,23 @@ function generate_bar() {
       .call(d3.axisRight(y1));
 
       svg.selectAll("bars")
-      //TODO .data(data)
+      .data(pX)
       .enter()
       .append("rect")
-        .attr("x", function(d) { return x(d.Concelho); })
-        //.attr("y", function(d) { return y(d.Value); })
+        .attr("x", function(d) {console.log(d);return x(d); })
+        .attr("y", function(d) {
+          if (attribute == "education") {
+            return y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
+          }
+          return y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
+         })
         .attr("width", x.bandwidth())
-        .attr("height", function(d) { return height - y(d.Value); })
+        .attr("height", function(d) {
+          if (attribute == "education") {
+            return y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
+          }
+          return height - y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
+         })
         .attr("fill", "#69b3a2")
 
     //Title of X-Axis
