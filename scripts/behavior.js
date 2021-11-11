@@ -175,12 +175,12 @@ function generate_bar() {
 
     var svg = d3.select("#bar")
       .append("svg")
-      .attr("width", width + margin.left + margin.right + 10)
+      .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom + 40)
       .attr("id", "bar-id")
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
+
     var pX = []
     for (i in list) {
       pX.push(votesRaw[list[i]]);
@@ -205,56 +205,13 @@ function generate_bar() {
     svg.append("g")
       .call(d3.axisLeft(y0));
 
-    var attribute;
-    if (document.getElementById('crime').checked) {
-      attribute = "crime";
-    } else if (document.getElementById('employed').checked) {
-      attribute = "employed";
-    } else if (document.getElementById('immigrants').checked) {
-      attribute = "immigrants";
-    } else if (document.getElementById('seniors').checked) {
-      attribute = "seniors";
-    } else if (document.getElementById('education').checked) {
-      attribute = "education";
-    } else if (document.getElementById('power').checked) {
-      attribute = "power";
-    } else {
-      attribute = "none";
-    }
-
-    if (attribute == "crime") {
-      var y1 = d3.scaleLinear()
-        .domain([0, 0.1])
-        .range([ height, 0 ]);
-    } else if (attribute == 'employed') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 100])
-        .range([ height, 0 ]);
-    } else if (attribute == 'immigrants') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 30])
-        .range([ height, 0 ]);
-    } else if (attribute == 'seniors') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 5.5])
-        .range([ height, 0 ]);
-    } else if (attribute == 'education') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 6])
-        .range([ height, 0 ]);
-    } else if (attribute == 'power') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 0.11])
-        .range([ height, 0 ]);
-    } else {
-      var y1 = d3.scaleLinear()
-      .domain([0, 100])
-      .range([ height, 0 ]);
-    }
-    
+    //TODO depends on what is selected
+    var y1 = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
 
     svg.append("g")
-      .attr("transform", "translate(" + (width-10) + " ,0)")	
+      .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
 
       svg.selectAll("bars")
@@ -266,76 +223,6 @@ function generate_bar() {
         .attr("width", x.bandwidth())
         .attr("height", function(d) { return height - y(d.Value); })
         .attr("fill", "#69b3a2")
-
-    //Title of X-Axis
-    svg.append("text")
-    .attr("text-anchor", "end")
-    .attr("x", width + 20)
-    .attr("y", height + 40)
-    .style("font-size", "13px")
-    .text("Municipalities");
-
-    //Title of Y-Axis
-    svg.append("text")
-    .attr("text-anchor", "end")
-    .attr("transform", "rotate(-90)")
-    .attr("y", -margin.left + 10)
-    .attr("x", -margin.top + 25)
-    .style("font-size", "13px")
-    .text("% of votes on winning party");
-    
-    //Title of Y1-Axis
-    if (attribute == "crime") {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 430)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("Crime Ratio");      
-    } else if (attribute == 'employed') {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 425)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("% Employed");       
-    } else if (attribute == 'immigrants') {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 425)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("% Immigrants");       
-    } else if (attribute == 'seniors') {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 425)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("Ratio Seniors/100");       
-    } else if (attribute == 'education') {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 425)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("% University Education");       
-    } else if (attribute == 'power') {
-      svg.append("text")
-      .attr("text-anchor", "end")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 430)
-      .attr("x", -margin.top + 25)
-      .style("font-size", "13px")
-      .text("Purchasing Power"); 
-    } else {
-      
-    }  
   }
 }
 
@@ -795,14 +682,6 @@ function clear() {
   clearBar();
   clearGroup();
 
-  var ele1 = document.getElementsByName("checkboxesline1");
-  for(var i=0;i<ele1.length;i++)
-     ele1[i].checked = false;
-
-  var ele2 = document.getElementsByName("checkboxesline2");
-  for(var i=0;i<ele2.length;i++)
-    ele2[i].checked = false;
-
   const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
 }
@@ -844,7 +723,7 @@ function clearBar() {
     .range([ height, 0 ]);
 
   svg.append("g")
-    .attr("transform", "translate(" + (width-10) + " ,0)")	
+    .attr("transform", "translate(" + (width-10) + " ,0)")
     .call(d3.axisRight(y1));
 }
 
@@ -965,7 +844,7 @@ function getDataYear(year) {
       concelho["%Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
       concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
       concelho["%Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"] * 100:-1
-      concelho["Purch. Power Ratio"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]/100:-1
+      concelho["Purch. Power Ratio"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
 
       data.push(concelho)
     }
