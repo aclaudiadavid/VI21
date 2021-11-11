@@ -14,6 +14,7 @@ var votes;
 var width = 400;
 var height = 200;
 
+var attribute;
 list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
@@ -37,7 +38,6 @@ Promise.all([d3.json(map), d3.json(tvotes), d3.json(crime),d3.json(desemp),d3.js
     yearF()
     generate_map();
     generate_parallel();
-    generate_bar();
     generate_stacked();
     all();
     addZoom();
@@ -116,12 +116,12 @@ function generate_parallel() {
   // Extract the list of dimensions we want to keep in the plot
   dimensions = Object.keys(data[0]).filter(function(d) { return d != "concelho" })
 
-  // For each dimension, a linear scale
+  // For each dimension, I build a linear scale. I store all in a y object
   var y = {}
   for (i in dimensions) {
     name = dimensions[i]
     y[name] = d3.scaleLinear()
-      .domain(d3.extent(data, function(d) { return +d[name]; }) )
+      .domain( d3.extent(data, function(d) { return +d[name]; }) )
       .range([height, 0])
   }
 
@@ -145,10 +145,6 @@ function generate_parallel() {
     .style("fill", "none")
     .style("stroke", "steelblue")
     .style("opacity", 0.5)
-    .append("title")
-    .text(function (d) {
-      return votesRaw[d.concelho];
-    });
 
   // Draw the axis:
   svg.selectAll("myAxis")
@@ -167,65 +163,6 @@ function generate_parallel() {
       .style("fill", "black")
 }
 
-function generate_bar() {
-  if(list.length == 0) {
-    clearBar();
-  } else {
-    d3.select("#bar").select("svg").remove()
-
-    var svg = d3.select("#bar")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom + 40)
-      .attr("id", "bar-id")
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    var pX = []
-    for (i in list) {
-      pX.push(votesRaw[list[i]]);
-    }
-
-    var x = d3.scaleBand()
-      .domain(pX)
-      .range([0, width-10])
-      .padding([0.2]);
-
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x))
-      .selectAll("text")
-      .attr("transform", "translate(15,-5)rotate(-25)")  //TODO isto nao esta nada centrado
-      .style("text-anchor", "end");
-
-    var y0 = d3.scaleLinear()
-      .domain([0, 100])
-      .range([ height, 0 ]);
-
-    svg.append("g")
-      .call(d3.axisLeft(y0));
-
-    //TODO depends on what is selected
-    var y1 = d3.scaleLinear()
-    .domain([0, 100])
-    .range([ height, 0 ]);
-
-    svg.append("g")
-      .attr("transform", "translate(" + (width-10) + " ,0)")
-      .call(d3.axisRight(y1));
-
-      svg.selectAll("bars")
-      //TODO .data(data)
-      .enter()
-      .append("rect")
-        .attr("x", function(d) { return x(d.Concelho); })
-        //.attr("y", function(d) { return y(d.Value); })
-        .attr("width", x.bandwidth())
-        .attr("height", function(d) { return height - y(d.Value); })
-        .attr("fill", "#69b3a2")
-  }
-}
-
 function generate_stacked() {
   if(list.length == 0) {
     clearGroup();
@@ -242,7 +179,7 @@ function generate_stacked() {
     var svg = d3.select("#grouped")
       .append("svg")
       .attr("width", width + margin.left + margin.right)
-      .attr("height", height + 30 + margin.top + margin.bottom)
+      .attr("height", height + 20 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -329,7 +266,7 @@ function generate_stacked() {
     svg.append("text")
     .attr("text-anchor", "end")
     .attr("x", width - margin.right)
-    .attr("y", height + 35)
+    .attr("y", height + 25)
     .style("font-size", "13px")
     .text("Election years");
 
@@ -342,12 +279,183 @@ function generate_stacked() {
     .style("font-size", "13px")
     .text("% of votes");
 
-    //Title of stacked chart
+    //Title of LineChart
     svg.append("text")
     .attr("text-anchor", "end")
     .attr("x", (margin.left + margin.right + width )/ 2)
-    .attr("y", -8)
+    .attr("y", 0)
     .text(votesRaw[loc]);
+  }
+}
+
+function generate_bar() {
+  if(list.length == 0) {
+    clearBar();
+  } else {
+    d3.select("#bar").select("svg").remove()
+
+    var svg = d3.select("#bar")
+      .append("svg")
+      .attr("width", width + margin.left + margin.right + 10)
+      .attr("height", height + margin.top + margin.bottom + 40)
+      .attr("id", "bar-id")
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var pX = []
+    for (i in list) {
+      pX.push(votesRaw[list[i]]);
+    }
+
+    var x = d3.scaleBand()
+      .domain(pX)
+      .range([0, width-10])
+      .padding([0.2]);
+
+    svg.append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x))
+      .selectAll("text")
+      .attr("transform", "translate(15,-5)rotate(-25)")  //TODO isto nao esta nada centrado
+      .style("text-anchor", "end");
+
+    var y0 = d3.scaleLinear()
+      .domain([0, 100])
+      .range([ height, 0 ]);
+
+    svg.append("g")
+      .call(d3.axisLeft(y0));
+
+    if (document.getElementById('crime').checked) {
+      attribute = "crime";
+    } else if (document.getElementById('employed').checked) {
+      attribute = "employed";
+    } else if (document.getElementById('immigrants').checked) {
+      attribute = "immigrants";
+    } else if (document.getElementById('seniors').checked) {
+      attribute = "seniors";
+    } else if (document.getElementById('education').checked) {
+      attribute = "education";
+    } else if (document.getElementById('power').checked) {
+      attribute = "power";
+    } else {
+      attribute = "none";
+    }
+
+    if (attribute == "crime") {
+      var y1 = d3.scaleLinear()
+        .domain([0, 0.1])
+        .range([ height, 0 ]);
+    } else if (attribute == 'employed') {
+      var y1 = d3.scaleLinear()
+        .domain([0, 100])
+        .range([ height, 0 ]);
+    } else if (attribute == 'immigrants') {
+      var y1 = d3.scaleLinear()
+        .domain([0, 30])
+        .range([ height, 0 ]);
+    } else if (attribute == 'seniors') {
+      var y1 = d3.scaleLinear()
+        .domain([0, 5.5])
+        .range([ height, 0 ]);
+    } else if (attribute == 'education') {
+      var y1 = d3.scaleLinear()
+        .domain([0, 6])
+        .range([ height, 0 ]);
+    } else if (attribute == 'power') {
+      var y1 = d3.scaleLinear()
+        .domain([0, 0.11])
+        .range([ height, 0 ]);
+    } else {
+      var y1 = d3.scaleLinear()
+      .domain([0, 100])
+      .range([ height, 0 ]);
+    }
+
+
+    svg.append("g")
+      .attr("transform", "translate(" + (width-10) + " ,0)")
+      .call(d3.axisRight(y1));
+
+      svg.selectAll("bars")
+      //TODO .data(data)
+      .enter()
+      .append("rect")
+        .attr("x", function(d) { return x(d.Concelho); })
+        //.attr("y", function(d) { return y(d.Value); })
+        .attr("width", x.bandwidth())
+        .attr("height", function(d) { return height - y(d.Value); })
+        .attr("fill", "#69b3a2")
+
+    //Title of X-Axis
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("x", width + 20)
+    .attr("y", height + 40)
+    .style("font-size", "13px")
+    .text("Municipalities");
+
+    //Title of Y-Axis
+    svg.append("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-90)")
+    .attr("y", -margin.left + 10)
+    .attr("x", -margin.top + 25)
+    .style("font-size", "13px")
+    .text("% of votes on winning party");
+
+    //Title of Y1-Axis
+    if (attribute == "crime") {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 430)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("Crime Ratio");
+    } else if (attribute == 'employed') {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 425)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("% Employed");
+    } else if (attribute == 'immigrants') {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 425)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("% Immigrants");
+    } else if (attribute == 'seniors') {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 425)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("Ratio Seniors/100");
+    } else if (attribute == 'education') {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 425)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("% University Education");
+    } else if (attribute == 'power') {
+      svg.append("text")
+      .attr("text-anchor", "end")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 430)
+      .attr("x", -margin.top + 25)
+      .style("font-size", "13px")
+      .text("Purchasing Power");
+    } else {
+
+    }
   }
 }
 
@@ -569,14 +677,14 @@ var colorScale2 = d3.scaleOrdinal()
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 49)
-  .attr("x", -margin.top + 5)
+  .attr("y", -margin.left + 40)
+  .attr("x", -margin.top)
   .style("font-size", "13px")
   .text("% of votes");
 
   //Title of LineChart
   svg.append("text")
-  .attr("text-anchor", "middle")
+  .attr("text-anchor", "end")
   .attr("x", (margin.left + margin.right + width )/ 2)
   .attr("y", 0)
   .text(votesRaw[concelho]);
@@ -614,7 +722,6 @@ function handleClick(event, d) {
   }
   add_line_charts();
   changeParallel();
-  generate_bar();
   generate_stacked();
 }
 
@@ -623,7 +730,6 @@ function changeParallel() {
   d3.select("#parallel-id")
   .selectAll("g")
   .selectAll("path")
-  .transition()
   .style("stroke", "grey")
   .style("opacity", 0.1)
 
@@ -636,7 +742,6 @@ function changeParallel() {
         return d["concelho"] == list[i]
       }
     })
-    .transition()
     .style("stroke", "steelblue")
     .style('opacity', 1)
     .style("stroke-width", 3)
@@ -671,7 +776,6 @@ function clear() {
   d3.select("#parallel-id")
   .selectAll("g")
   .selectAll("path")
-  .transition()
   .style("stroke", "grey")
   .style("opacity", 0.5)
 
@@ -679,8 +783,8 @@ function clear() {
     .style("stroke", "black")
 
   clear_line();
-  clearBar();
   clearGroup();
+  clearBar();
 
   const municipalitiesList = d3.select("#municipalities").selectAll("li").remove();
   list = [];
@@ -697,6 +801,8 @@ function clearBar() {
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+  var check = document.getElementById(attribute)
+  check!=null? check.checked=false:null
 
   var x = d3.scaleBand()
     .domain([])
@@ -725,52 +831,6 @@ function clearBar() {
   svg.append("g")
     .attr("transform", "translate(" + (width-10) + " ,0)")
     .call(d3.axisRight(y1));
-}
-
-function clearGroup() {
-  d3.select("#grouped").select("svg").remove()
-
-  var svg = d3.select("#grouped")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + 20 + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // Add X axis
-    var x = d3.scaleBand()
-    .domain(Object.keys(votes["PORTUGAL"]))
-    .range([0, width])
-    .padding([0.2])
-
-    svg.append("g")
-    .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickSizeOuter(0));
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-    .domain([0, 100])
-    .range([ height, 0 ]);
-
-    svg.append("g")
-    .call(d3.axisLeft(y));
-
-  //Title of X-Axis
-  svg.append("text")
-  .attr("text-anchor", "end")
-  .attr("x", width - margin.right)
-  .attr("y", height + 35)
-  .style("font-size", "13px")
-  .text("Election years");
-
-  //Title of Y-Axis
-  svg.append("text")
-  .attr("text-anchor", "end")
-  .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 10)
-  .attr("x", -margin.top + 25)
-  .style("font-size", "13px")
-  .text("% of votes");
 }
 
 function clear_line() {
@@ -825,8 +885,54 @@ function clear_line() {
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 49)
-  .attr("x", -margin.top + 5)
+  .attr("y", -margin.left + 40)
+  .attr("x", -margin.top)
+  .style("font-size", "13px")
+  .text("% of votes");
+}
+
+function clearGroup() {
+  d3.select("#grouped").select("svg").remove()
+
+  var svg = d3.select("#grouped")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + 20 + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Add X axis
+    var x = d3.scaleBand()
+    .domain(Object.keys(votes["PORTUGAL"]))
+    .range([0, width])
+    .padding([0.2])
+
+    svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSizeOuter(0));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+    .domain([0, 100])
+    .range([ height, 0 ]);
+
+    svg.append("g")
+    .call(d3.axisLeft(y));
+
+  //Title of X-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("x", width - margin.right)
+  .attr("y", height + 25)
+  .style("font-size", "13px")
+  .text("Election years");
+
+  //Title of Y-Axis
+  svg.append("text")
+  .attr("text-anchor", "end")
+  .attr("transform", "rotate(-90)")
+  .attr("y", -margin.left + 10)
+  .attr("x", -margin.top + 25)
   .style("font-size", "13px")
   .text("% of votes");
 }
@@ -836,15 +942,15 @@ function getDataYear(year) {
 
   for (i in votesRaw) {
     concelho = {}
-    if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "ÁREAMETROPOLITANADOPORTO" && i != "DOURO" && i != "TERRASDETRÁS-OS-MONTES" && i != "CENTRO" && i != "OESTE" && i != "REGIÃODEAVEIRO" && i != "REGIÃODECOIMBRA" && i != "REGIÃODELEIRIA" && i != "BEIRABAIXA" && i != "MÉDIOTEJO" && i != "BEIRASESERRADAESTRELA" && i != "ÁREAMETROPOLITANADELISBOA" && i != "ALENTEJO" && i != "ALENTEJOLITORAL" && i != "BAIXOALENTEJO" && i != "LEZÍRIADOTEJO" && i != "ALTOALENTEJO" && i != "ALENTEJOCENTRAL" && i != "ALGARVE" && i != "REGIÃOAUTÓNOMADOSAÇORES" && i != "ILHADESANTAMARIA" && i != "ILHADESÃOMIGUEL" && i != "ILHATERCEIRA" && i != "ILHAGRACIOSA" && i != "ILHADESÃOJORGE" && i != "ILHADOPICO" && i != "ILHADOFAIAL" && i != "ILHADASFLORES" && i != "ILHADOCORVO" && i != "REGIÃOAUTÓNOMADAMADEIRA" && i != "ILHADAMADEIRA" && i != "ILHADEPORTOSANTO") {
+    if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["%Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year] * 100:-1
-      concelho["%Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
-      concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
-      concelho["%Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"] * 100:-1
-      concelho["Purch. Power Ratio"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
+      concelho["% Crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year]:-1
+      concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
+      concelho["Seniors/100 Working-age"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
+      concelho["% College Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
+      concelho["Purchasing Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
 
       data.push(concelho)
     }
