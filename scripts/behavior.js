@@ -147,6 +147,10 @@ function generate_parallel() {
     .style("fill", "none")
     .style("stroke", () => {if (list.length != 0) {return "steelblue"} else {return "grey"}} )
     .style("opacity", 0.5)
+    .append("title")
+    .text(function (d) {
+      return votesRaw[d.concelho];
+    });
 
   // Draw the axis:
   svg.selectAll("myAxis")
@@ -281,7 +285,7 @@ function generate_stacked() {
     .style("font-size", "13px")
     .text("% of votes");
 
-    //Title of LineChart
+    //Title of stacked
     svg.append("text")
     .attr("text-anchor", "end")
     .attr("x", (margin.left + margin.right + width )/ 2)
@@ -370,9 +374,15 @@ function generate_bar() {
         .domain([0, 6])
         .range([ height, 0 ]);
     } else if (attribute == 'power') {
-      var y1 = d3.scaleLinear()
+      if (list[0] == "PORTUGAL") {
+        var y1 = d3.scaleLinear()
+        .domain([0, 1])
+        .range([ height, 0 ]);
+      } else {
+        var y1 = d3.scaleLinear()
         .domain([0, 0.11])
         .range([ height, 0 ]);
+      }
     } else {
       var y1 = d3.scaleLinear()
       .domain([0, 100])
@@ -400,6 +410,7 @@ function generate_bar() {
           if (attribute == "education") {
             return height - y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
           }
+          console.log(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
           return height - y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
          })
         .attr("fill", "#69b3a2")
@@ -695,14 +706,14 @@ var colorScale2 = d3.scaleOrdinal()
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 40)
-  .attr("x", -margin.top)
+  .attr("y", -margin.left + 49)
+  .attr("x", -margin.top + 5)
   .style("font-size", "13px")
   .text("% of votes");
 
   //Title of LineChart
   svg.append("text")
-  .attr("text-anchor", "end")
+  .attr("text-anchor", "middle")
   .attr("x", (margin.left + margin.right + width )/ 2)
   .attr("y", 0)
   .text(votesRaw[concelho]);
@@ -749,6 +760,7 @@ function changeParallel() {
   d3.select("#parallel-id")
   .selectAll("g")
   .selectAll("path")
+  .transition()
   .style("stroke", "grey")
   .style("opacity", 0.1)
 
@@ -761,6 +773,7 @@ function changeParallel() {
         return d["concelho"] == list[i]
       }
     })
+    .transition()
     .style("stroke", "steelblue")
     .style('opacity', 1)
     .style("stroke-width", 3)
@@ -778,6 +791,7 @@ function all() {
   d3.select("#parallel-id")
   .selectAll("g")
   .selectAll("path")
+  .transition()
   .style("stroke", "steelblue")
   .style("opacity", 0.5)
 
@@ -795,6 +809,7 @@ function clear() {
   d3.select("#parallel-id")
   .selectAll("g")
   .selectAll("path")
+  .transition()
   .style("stroke", "grey")
   .style("opacity", 0.5)
 
@@ -961,7 +976,7 @@ function getDataYear(year) {
 
   for (i in votesRaw) {
     concelho = {}
-    if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
+    if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "ÁREAMETROPOLITANADOPORTO" && i != "DOURO" && i != "TERRASDETRÁS-OS-MONTES" && i != "CENTRO" && i != "OESTE" && i != "REGIÃODEAVEIRO" && i != "REGIÃODECOIMBRA" && i != "REGIÃODELEIRIA" && i != "BEIRABAIXA" && i != "MÉDIOTEJO" && i != "BEIRASESERRADAESTRELA" && i != "ÁREAMETROPOLITANADELISBOA" && i != "ALENTEJO" && i != "ALENTEJOLITORAL" && i != "BAIXOALENTEJO" && i != "LEZÍRIADOTEJO" && i != "ALTOALENTEJO" && i != "ALENTEJOCENTRAL" && i != "ALGARVE" && i != "REGIÃOAUTÓNOMADOSAÇORES" && i != "ILHADESANTAMARIA" && i != "ILHADESÃOMIGUEL" && i != "ILHATERCEIRA" && i != "ILHAGRACIOSA" && i != "ILHADESÃOJORGE" && i != "ILHADOPICO" && i != "ILHADOFAIAL" && i != "ILHADASFLORES" && i != "ILHADOCORVO" && i != "REGIÃOAUTÓNOMADAMADEIRA" && i != "ILHADAMADEIRA" && i != "ILHADEPORTOSANTO") {
       c = votesRaw[i];
       concelho["concelho"] = i;
       concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
