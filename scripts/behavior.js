@@ -15,7 +15,7 @@ var width = 400;
 var height = 200;
 
 var attribute;
-var attrPos = ["crime", "employed", "imigrants", "seniors", "education", "power"]
+var attrPos = ["crime", "employed", "immigrants", "seniors", "education", "power"]
 list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
@@ -388,7 +388,7 @@ function generate_bar() {
       .data(pX)
       .enter()
       .append("rect")
-        .attr("x", function(d) {console.log(d);return x(d); })
+        .attr("x", function(d) {return x(d); })
         .attr("y", function(d) {
           if (attribute == "education") {
             return y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
@@ -398,7 +398,7 @@ function generate_bar() {
         .attr("width", x.bandwidth())
         .attr("height", function(d) {
           if (attribute == "education") {
-            return y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
+            return height - y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
           }
           return height - y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
          })
@@ -526,6 +526,7 @@ function add(d) {
   add_line_charts();
   changeParallel();
   generate_stacked();
+  generate_bar();
 }
 
 function add_line_charts(){
@@ -740,6 +741,7 @@ function handleClick(event, d) {
   add_line_charts();
   changeParallel();
   generate_stacked();
+  generate_bar();
 }
 
 
