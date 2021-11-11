@@ -945,12 +945,12 @@ function getDataYear(year) {
     if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "CENTRO" && i != "SUL") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["% Crime"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year]:-1
+      concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year] * 100:-1
       concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
-      concelho["Seniors/100 Working-age"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]:-1
-      concelho["% College Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]:-1
-      concelho["Purchasing Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]:-1
+      concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
+      concelho["% Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]*100:-1
+      concelho["Purch. Power"] = parallel_values[5][c][year] != null? parallel_values[5][c][year]/100:-1
 
       data.push(concelho)
     }
