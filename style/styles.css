@@ -77,6 +77,22 @@ body {
     justify-self: center;
 }
 
+#checkboxesline1 {
+    align-self: flex-start;
+    justify-self: center;
+    font-size: 13px;
+    margin-left: 95px;
+    margin-right: 95px;
+}
+
+#checkboxesline2 {
+    align-self: flex-start;
+    justify-self: center;
+    font-size: 13px;
+    margin-left: 80px;
+    margin-right: 80px;
+}
+
 #bar {
     align-self: flex-start;
     justify-self: center;
