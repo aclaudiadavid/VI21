@@ -308,7 +308,7 @@ function generate_bar() {
 
     var svg = d3.select("#bar")
       .append("svg")
-      .attr("width", width + margin.left + margin.right + 10)
+      .attr("width", width + margin.left + margin.right + 50)
       .attr("height", height + margin.top + margin.bottom + 40)
       .attr("id", "bar-id")
       .append("g")
@@ -318,6 +318,67 @@ function generate_bar() {
     for (i in list) {
       pX.push(votesRaw[list[i]]);
     }
+    if (document.getElementById('crime').checked) {
+      attribute = "crime";
+    } else if (document.getElementById('employed').checked) {
+      attribute = "employed";
+    } else if (document.getElementById('immigrants').checked) {
+      attribute = "immigrants";
+    } else if (document.getElementById('seniors').checked) {
+      attribute = "seniors";
+    } else if (document.getElementById('education').checked) {
+      attribute = "education";
+    } else if (document.getElementById('power').checked) {
+      attribute = "power";
+    } else {
+      attribute = "none";
+    }
+
+
+    data_bar = []
+    for (i in pX) {
+      c = {}
+      var value = 0
+      c["concelho"] = pX[i];
+      if(attribute == "education") {
+        console.log(parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total)
+        if(parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total < 0) {
+          value = 0
+        } else {
+          value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total * 100
+        }
+      } else if(attribute != "none") {
+        if(parallel_values[attrPos.indexOf(attribute)][pX[i]][year]<0) {
+          value = 0
+        } else {
+          attribute=="employed"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]*100:0
+          attribute=="seniors"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
+          attribute=="power"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
+          attribute=="crime"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
+          attribute=="immigrants"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
+        }
+      }
+      c[attribute] = value
+
+      max = 0;
+      for(j in votes[pX[i].toUpperCase().replace(/\s+/g, '')][year]) {
+        if(votes[pX[i].toUpperCase().replace(/\s+/g, '')][year][j]> max && j!="total" && j!="votos" && j!="abstencao") {
+          max = votes[pX[i].toUpperCase().replace(/\s+/g, '')][year][j]
+        }
+      }
+      c["votes"] = (max/votes[pX[i].toUpperCase().replace(/\s+/g, '')][year].votos)*100
+
+      data_bar.push(c)
+    }
+
+    console.log(data_bar)
+
+    var max = d3.max(data_bar, (d) => {
+      if (d[attribute]) {
+        return d[attribute]
+      }
+      return 1;
+    })
 
     var x = d3.scaleBand()
       .domain(pX)
@@ -338,78 +399,10 @@ function generate_bar() {
     svg.append("g")
       .call(d3.axisLeft(y0));
 
-    if (document.getElementById('crime').checked) {
-      attribute = "crime";
-    } else if (document.getElementById('employed').checked) {
-      attribute = "employed";
-    } else if (document.getElementById('immigrants').checked) {
-      attribute = "immigrants";
-    } else if (document.getElementById('seniors').checked) {
-      attribute = "seniors";
-    } else if (document.getElementById('education').checked) {
-      attribute = "education";
-    } else if (document.getElementById('power').checked) {
-      attribute = "power";
-    } else {
-      attribute = "none";
-    }
-
-    if (attribute == "crime") {
-      var y1 = d3.scaleLinear()
-        .domain([0, 0.1])
-        .range([ height, 0 ]);
-    } else if (attribute == 'employed') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 100])
-        .range([ height, 0 ]);
-    } else if (attribute == 'immigrants') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 30])
-        .range([ height, 0 ]);
-    } else if (attribute == 'seniors') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 5.5])
-        .range([ height, 0 ]);
-    } else if (attribute == 'education') {
-      var y1 = d3.scaleLinear()
-        .domain([0, 6])
-        .range([ height, 0 ]);
-    } else if (attribute == 'power') {
-      if (list[0] == "PORTUGAL") {
-        var y1 = d3.scaleLinear()
-        .domain([0, 1])
-        .range([ height, 0 ]);
-      } else {
-        var y1 = d3.scaleLinear()
-        .domain([0, 0.11])
-        .range([ height, 0 ]);
-      }
-    } else {
-      var y1 = d3.scaleLinear()
-      .domain([0, 100])
+    var y1 = d3.scaleLinear()
+      .domain([0, max])
       .range([ height, 0 ]);
-    }
 
-    data_bar = []
-    for (i in pX) {
-      c = {}
-      var value = 0
-      c["concelho"] = pX[i];
-      if(attribute == "education") {
-        c[attribute] = value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total * 100
-      } else if(attribute != "none") {
-        attribute=="employed"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]*100:0
-        attribute=="seniors"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
-        attribute=="power"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
-        attribute=="crime"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
-        attribute=="immigrants"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
-
-        c[attribute] = value
-      }
-
-      console.log(c);
-      data_bar.push(c)
-    }
 
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
@@ -422,9 +415,24 @@ function generate_bar() {
         .attr("y", (d) => {return y1(d[attribute])})
         .attr("width", x.bandwidth())
         .attr("height", function(d) {
-          return height - y1(d[attribute]);
+          return height - y1(d[attribute])
         })
         .attr("fill", "#69b3a2")
+
+    svg.append("g")
+      .attr("transform", "translate(" + (width-10) + " ,0)")
+      .call(d3.axisRight(y1));
+      svg.selectAll("circle")
+      .data(data_bar)
+      .enter()
+      .append("circle")
+        .attr("cx", function(d) {return (x(d.concelho)+ (x.bandwidth()/2))})
+        .attr("cy", (d) => {return y0(d["votes"])})
+        .attr("r", 3)
+        .attr("height", function(d) {
+          return height - y0(d[attribute]);
+        })
+        .attr("fill", "steelblue")
 
     //Title of X-Axis
     svg.append("text")
@@ -448,7 +456,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 430)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("Crime Ratio");
@@ -488,7 +496,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 430)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("Purchasing Power");
