@@ -59,6 +59,7 @@ function yearDown() {
 
   yearF()
   generate_parallel()
+  generate_bar();
 }
 
 function yearUp() {
@@ -70,6 +71,7 @@ function yearUp() {
 
   yearF()
   generate_parallel()
+  generate_bar()
 }
 
 function generate_map() {
@@ -245,7 +247,7 @@ function generate_stacked() {
 
       var dt = stackedData(data);
 
-      console.log(dt)
+      //console.log(dt)
 
       // Show the bars
       // Show the bars
@@ -255,7 +257,7 @@ function generate_stacked() {
         .data(data)
         .enter()
         .append("g")
-        .attr("transform", function(d) {console.log(d); return "translate(" + x(d.ano) + ",0)"; })
+        .attr("transform", function(d) {return "translate(" + x(d.ano) + ",0)"; })
         .selectAll("rect")
         .data(function(d) { return subgroups.map(function(key) {return {key: key, value: d[key]}; }); })
         .enter().append("rect")
@@ -388,30 +390,40 @@ function generate_bar() {
       .range([ height, 0 ]);
     }
 
+    data_bar = []
+    for (i in pX) {
+      c = {}
+      var value = 0
+      c["concelho"] = pX[i];
+      if(attribute == "education") {
+        c[attribute] = value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total * 100
+      } else if(attribute != "none") {
+        attribute=="employed"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]*100:0
+        attribute=="seniors"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
+        attribute=="power"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]/100:0
+        attribute=="crime"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
+        attribute=="immigrants"?value = parallel_values[attrPos.indexOf(attribute)][pX[i]][year]:0
+
+        c[attribute] = value
+      }
+
+      console.log(c);
+      data_bar.push(c)
+    }
 
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
-
       svg.selectAll("bars")
-      .data(pX)
+      .data(data_bar)
       .enter()
       .append("rect")
-        .attr("x", function(d) {return x(d); })
-        .attr("y", function(d) {
-          if (attribute == "education") {
-            return y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
-          }
-          return y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
-         })
+        .attr("x", function(d) {return x(d.concelho); })
+        .attr("y", (d) => {return y1(d[attribute])})
         .attr("width", x.bandwidth())
         .attr("height", function(d) {
-          if (attribute == "education") {
-            return height - y1(parallel_values[attrPos.indexOf(attribute)][d][year].total);
-          }
-          console.log(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
-          return height - y1(parallel_values[attrPos.indexOf(attribute)][d][selector[attrPos.indexOf(attribute)]]);
-         })
+          return height - y1(d[attribute]);
+        })
         .attr("fill", "#69b3a2")
 
     //Title of X-Axis

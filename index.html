@@ -41,13 +41,14 @@
 				<div id ="map"></div>
 			</div>
 			<div id = "center">
-				<div id="year-div">
-					<img style="width:20px;height:20px;" src="/images/right-arrow.png" id="arrow-left" onclick="yearDown()">
-					<div id="year"></div>
-					<img style="width:20px;height:20px;" src="/images/right-arrow.png" id="arrow-right" onclick="yearUp()">
-				</div>
-				<div id = "parallel"></div>
-				<div class="center-b">
+				<div id="center-div">
+					<div id="year-div">
+						<img style="width:20px;height:20px;" src="/images/right-arrow.png" id="arrow-left" onclick="yearDown()">
+						<div id="year"></div>
+						<img style="width:20px;height:20px;" src="/images/right-arrow.png" id="arrow-right" onclick="yearUp()">
+					</div>
+					<div id = "parallel"></div>
+					<div class="center-b">
 					<form id="form-id">
 						<div id = "checkboxesline1">
 							<input type="radio" id="crime" name="attribute" value="crime" onclick="generate_bar()">
@@ -67,6 +68,7 @@
 						</div>
 					</form>
 					<div id = "bar"></div>
+				</div>
 				</div>
 			</div>
 			<div id="right">
