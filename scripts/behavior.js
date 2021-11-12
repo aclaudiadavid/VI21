@@ -266,7 +266,7 @@ function generate_stacked() {
         .attr("y0", function(d) {return y(d.value[0]);})
         .attr("width", xSubgroup.bandwidth())
         .attr("height", function(d) { return height - y(d.value[1]); })
-        //.attr("fill", function(d, i) { return color(d); });
+        .attr("fill", function(d, i) { return d3.interpolateGnBu((i+1)/list.length); });
 
 
     //Title of X-Axis
