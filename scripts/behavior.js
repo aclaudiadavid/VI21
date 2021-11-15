@@ -422,7 +422,8 @@ function generate_bar() {
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
-      svg.selectAll("bars")
+      
+    svg.selectAll("bars")
       .data(data_bar)
       .enter()
       .append("rect")
@@ -432,7 +433,7 @@ function generate_bar() {
         .attr("height", function(d) {
           return height - y1(d[attribute])
         })
-        .attr("fill", "#b3d1ff")
+        .attr("fill", "#7ba3c6")
         .append("title")
         .text(function (d) {
           return attribute + ": " + d[attribute];
@@ -448,35 +449,30 @@ function generate_bar() {
     .domain([0,10])
     .range(['#16b311', '#ddb220', '#b14d14', '#ff0000', '#000000', '#af0f88', '#6d5b69', '#16d189', '#581845','#56ff00'])
 
-
-
-    svg.append("g")
-      .attr("transform", "translate(" + (width-10) + " ,0)")
-      .call(d3.axisRight(y1));
-      svg.selectAll("circle")
-      .data(data_bar)
-      .enter()
-      .append("circle")
-        .attr("cx", function(d) {return (x(d.concelho)+ (x.bandwidth()/2))})
-        .attr("cy", (d) => {return y0(d["votes"])})
-        .attr("r", ()=>{
-          return list.length<6? 11-list.length:5;
-        })
-        .attr("height", function(d) {
-          return height - y0(d[attribute]);
-        })
-        .attr("fill", function(d) {
-          if(partidos_principais.includes(d.part)) {
-            //console.
-            return colorScale1(d.part);
-          }else{
-            return colorScale2(d.part);
-          }
-        })
-        .append("title")
-        .text(function (d) {
-          return  d.part + ": " + Math.round(d["votes"]*100)/100;
-        });
+    svg.selectAll("circle")
+    .data(data_bar)
+    .enter()
+    .append("circle")
+      .attr("cx", function(d) {return (x(d.concelho)+ (x.bandwidth()/2))})
+      .attr("cy", (d) => {return y0(d["votes"])})
+      .attr("r", ()=>{
+        return list.length<6? 11-list.length:5;
+      })
+      .attr("height", function(d) {
+        return height - y0(d[attribute]);
+      })
+      .attr("fill", function(d) {
+        if(partidos_principais.includes(d.part)) {
+          //console.
+          return colorScale1(d.part);
+        }else{
+          return colorScale2(d.part);
+        }
+      })
+      .append("title")
+      .text(function (d) {
+        return  d.part + ": " + Math.round(d["votes"]*100)/100;
+      });
 
 
     //Title of X-Axis
@@ -509,7 +505,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% Employed");
@@ -517,7 +513,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% Immigrants");
@@ -525,7 +521,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("Ratio Seniors/100");
@@ -533,7 +529,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% University Education");
@@ -893,9 +889,9 @@ function clearBar() {
 
   var svg = d3.select("#bar")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom + 30)
-    .attr("id", "bar-id")
+    .attr("width", width + margin.left + margin.right + 50)
+    .attr("height", height + margin.top + margin.bottom + 40)
+  .attr("id", "bar-id")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -911,7 +907,7 @@ function clearBar() {
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x))
     .selectAll("text")
-    .attr("transform", "translate(-10,0)rotate(-45)")
+    .attr("transform", "translate(15,-5)rotate(-25)")  //TODO isto nao esta nada centrado
     .style("text-anchor", "end");
 
   var y0 = d3.scaleLinear()
@@ -921,7 +917,6 @@ function clearBar() {
   svg.append("g")
     .call(d3.axisLeft(y0));
 
-  //depends on what is selected
   var y1 = d3.scaleLinear()
     .domain([0, 100])
     .range([ height, 0 ]);
@@ -1060,7 +1055,9 @@ function getDataYear(year) {
     if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "ÁREAMETROPOLITANADOPORTO" && i != "DOURO" && i != "TERRASDETRÁS-OS-MONTES" && i != "CENTRO" && i != "OESTE" && i != "REGIÃODEAVEIRO" && i != "REGIÃODECOIMBRA" && i != "REGIÃODELEIRIA" && i != "BEIRABAIXA" && i != "MÉDIOTEJO" && i != "BEIRASESERRADAESTRELA" && i != "ÁREAMETROPOLITANADELISBOA" && i != "ALENTEJO" && i != "ALENTEJOLITORAL" && i != "BAIXOALENTEJO" && i != "LEZÍRIADOTEJO" && i != "ALTOALENTEJO" && i != "ALENTEJOCENTRAL" && i != "ALGARVE" && i != "REGIÃOAUTÓNOMADOSAÇORES" && i != "ILHADESANTAMARIA" && i != "ILHADESÃOMIGUEL" && i != "ILHATERCEIRA" && i != "ILHAGRACIOSA" && i != "ILHADESÃOJORGE" && i != "ILHADOPICO" && i != "ILHADOFAIAL" && i != "ILHADASFLORES" && i != "ILHADOCORVO" && i != "REGIÃOAUTÓNOMADAMADEIRA" && i != "ILHADAMADEIRA" && i != "ILHADEPORTOSANTO") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
+      if (parallel_values[0][c][year] != null) {
+        concelho["Crime Ratio"] = parallel_values[0][c][year] != -1? parallel_values[0][c][year]:-0.1
+      }
       if (parallel_values[1][c][year] != null) {
         concelho["% Employed"] = parallel_values[1][c][year] != -1?   parallel_values[1][c][year] * 100:-1
       }
