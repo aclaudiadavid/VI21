@@ -59,6 +59,7 @@ function yearDown() {
 
   yearF()
   generate_parallel()
+  changeParallel()
   generate_bar();
 }
 
@@ -71,6 +72,7 @@ function yearUp() {
 
   yearF()
   generate_parallel()
+  changeParallel()
   generate_bar()
 }
 
@@ -439,6 +441,18 @@ function generate_bar() {
           return attribute + ": " + d[attribute];
         });
 
+    partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PCP-PEV"];
+
+    var colorScale1 = d3.scaleOrdinal()
+    .domain(partidos_principais)
+    .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', '#00008B']);
+
+    var colorScale2 = d3.scaleOrdinal()
+    .domain([0,10])
+    .range(['#16b311', '#ddb220', '#b14d14', '#ff0000', '#000000', '#af0f88', '#6d5b69', '#16d189', '#581845','#56ff00'])
+
+
+
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
@@ -454,7 +468,14 @@ function generate_bar() {
         .attr("height", function(d) {
           return height - y0(d[attribute]);
         })
-        .attr("fill", "steelblue")
+        .attr("fill", function(d) {
+          if(partidos_principais.includes(d.part)) {
+            //console.
+            return colorScale1(d.part);
+          }else{
+            return colorScale2(d.part);
+          }
+        })
         .append("title")
         .text(function (d) {
           return  d.part + ": " + Math.round(d["votes"]*100)/100;
