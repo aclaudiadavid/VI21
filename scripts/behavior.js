@@ -266,7 +266,11 @@ function generate_stacked() {
         .attr("y0", function(d) {return y(d.value[0]);})
         .attr("width", xSubgroup.bandwidth())
         .attr("height", function(d) { return height - y(d.value[1]); })
-        .attr("fill", function(d, i) { return d3.interpolateGnBu((i+1)/list.length); });
+        .attr("fill", function(d, i) { return d3.interpolateGnBu(((i+1)/list.length))})
+        .append("title")
+        .text(function (d) {
+          return "votes: " + Math.round(d.value[1]*100)/100 + "%";
+        });;
 
 
     //Title of X-Axis
@@ -296,13 +300,13 @@ function generate_stacked() {
 
 
     var spacing = 0; //espaçamento entre cada código de cor
-
+    var l = list.length
+    i = 1
     for (d in list) {
-      //Legend
-      svg.append("circle").attr("cx",width).attr("cy",height-140+spacing).attr("r", 5).style("fill",d3.interpolateGnBu((d+1)/list.length));  //paints the corresponding color
+      svg.append("circle").attr("cx",width).attr("cy",height-140+spacing).attr("r", 5).style("fill",d3.interpolateGnBu(i/l))  //paints the corresponding color
       svg.append("text").attr("x", width+10).attr("y", height-140+spacing).text(votesRaw[list[d]]).style("font-size", "11px").attr("alignment-baseline","middle");  //writes the name of the party
       spacing+=20
-
+      i++;
     }
 
     /*
@@ -372,12 +376,15 @@ function generate_bar() {
       c[attribute] = value
 
       max = 0;
+      part = ""
       for(j in votes[pX[i].toUpperCase().replace(/\s+/g, '')][year]) {
         if(votes[pX[i].toUpperCase().replace(/\s+/g, '')][year][j]> max && j!="total" && j!="votos" && j!="abstencao") {
           max = votes[pX[i].toUpperCase().replace(/\s+/g, '')][year][j]
+          part=j
         }
       }
       c["votes"] = (max/votes[pX[i].toUpperCase().replace(/\s+/g, '')][year].votos)*100
+      c["part"] = part
 
       data_bar.push(c)
     }
@@ -426,7 +433,11 @@ function generate_bar() {
         .attr("height", function(d) {
           return height - y1(d[attribute])
         })
-        .attr("fill", "#69b3a2")
+        .attr("fill", "#b3d1ff")
+        .append("title")
+        .text(function (d) {
+          return attribute + ": " + d[attribute];
+        });
 
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
@@ -437,11 +448,18 @@ function generate_bar() {
       .append("circle")
         .attr("cx", function(d) {return (x(d.concelho)+ (x.bandwidth()/2))})
         .attr("cy", (d) => {return y0(d["votes"])})
-        .attr("r", 3)
+        .attr("r", ()=>{
+          return list.length<6? 11-list.length:5;
+        })
         .attr("height", function(d) {
           return height - y0(d[attribute]);
         })
         .attr("fill", "steelblue")
+        .append("title")
+        .text(function (d) {
+          return  d.part + ": " + Math.round(d["votes"]*100)/100;
+        });
+
 
     //Title of X-Axis
     svg.append("text")
@@ -804,7 +822,7 @@ function changeParallel() {
     .transition()
     .style("stroke", "steelblue")
     .style('opacity', 1)
-    .style("stroke-width", 3)
+    .style("stroke-width", "3px")
   }
 }
 

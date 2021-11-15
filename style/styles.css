@@ -1,3 +1,7 @@
+body::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   display: flex;
   flex-direction: column;
@@ -6,6 +10,8 @@ body {
   overflow-y: auto;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .title {
