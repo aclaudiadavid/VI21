@@ -1061,7 +1061,9 @@ function getDataYear(year) {
       c = votesRaw[i];
       concelho["concelho"] = i;
       concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year] * 100:-1
+      if (parallel_values[1][c][year] != null) {
+        concelho["% Employed"] = parallel_values[1][c][year] != -1?   parallel_values[1][c][year] * 100:-1
+      }
       concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
       concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
       concelho["% Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]*100:-1
