@@ -12,6 +12,7 @@ body {
   font-weight: lighter;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
+  background-color: #ede7e6;
 }
 
 .title {
