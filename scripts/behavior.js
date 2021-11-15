@@ -58,7 +58,7 @@ function yearDown() {
 
   yearF()
   generate_parallel()
-  list.length==0?changeParallel():null
+  changeParallel()
   generate_bar();
 }
 
@@ -69,7 +69,7 @@ function yearUp() {
 
   yearF()
   generate_parallel()
-  list.length==0?changeParallel():null
+  changeParallel()
   generate_bar()
 }
 
