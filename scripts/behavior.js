@@ -186,7 +186,7 @@ function generate_stacked() {
 
     var svg = d3.select("#grouped")
       .append("svg")
-      .attr("width", width + margin.left + margin.right)
+      .attr("width", width + 100 + margin.left + margin.right)
       .attr("height", height + 20 + margin.top + margin.bottom)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -288,10 +288,22 @@ function generate_stacked() {
 
     //Title of stacked
     svg.append("text")
-    .attr("text-anchor", "end")
-    .attr("x", (margin.left + margin.right + width )/ 2)
+    .attr("text-anchor", "middle")
+    .attr("x", (margin.left + margin.right + width)/ 2)
     .attr("y", 0)
-    .text(votesRaw[loc]);
+    .attr("id", "grouped-title")
+    .text("Voting participation per municipality");
+
+
+    var spacing = 0; //espaçamento entre cada código de cor
+
+    for (d in list) {
+      //Legend
+      svg.append("circle").attr("cx",width).attr("cy",height-140+spacing).attr("r", 5).style("fill",d3.interpolateGnBu((d+1)/list.length));  //paints the corresponding color
+      svg.append("text").attr("x", width+10).attr("y", height-140+spacing).text(votesRaw[list[d]]).style("font-size", "11px").attr("alignment-baseline","middle");  //writes the name of the party
+      spacing+=20
+
+    }
 
     /*
     svg.append("circle").attr("cx",width + margin.left).attr("cy",height-140).attr("r", 5).style("fill", red);
@@ -341,7 +353,6 @@ function generate_bar() {
       var value = 0
       c["concelho"] = pX[i];
       if(attribute == "education") {
-        console.log(parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total)
         if(parallel_values[attrPos.indexOf(attribute)][pX[i]][year].total < 0) {
           value = 0
         } else {
@@ -370,8 +381,6 @@ function generate_bar() {
 
       data_bar.push(c)
     }
-
-    console.log(data_bar)
 
     var max = d3.max(data_bar, (d) => {
       if (d[attribute]) {
