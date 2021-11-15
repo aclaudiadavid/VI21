@@ -19,6 +19,7 @@ var attrPos = ["crime", "employed", "immigrants", "seniors", "education", "power
 list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
+let years = [2001,2009,2013, 2017]
 year = 2009;
 var selector = [year, year, year, year, "total", year]
 
@@ -51,28 +52,24 @@ function yearF() {
 }
 
 function yearDown() {
-  year -= 4
-
-  if (year<1993) {
-    year = 1993
+  if(years.indexOf(year) != 0) {
+    year = years[years.indexOf(year)-1]
   }
 
   yearF()
   generate_parallel()
-  changeParallel()
+  list.length==0?changeParallel():null
   generate_bar();
 }
 
 function yearUp() {
-  year += 4;
-
-  if (year>2017) {
-    year = 2017
+  if(years.indexOf(year) != 3) {
+    year = years[years.indexOf(year)+1]
   }
 
   yearF()
   generate_parallel()
-  changeParallel()
+  list.length==0?changeParallel():null
   generate_bar()
 }
 
@@ -441,11 +438,11 @@ function generate_bar() {
           return attribute + ": " + d[attribute];
         });
 
-    partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PCP-PEV"];
+    partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
 
     var colorScale1 = d3.scaleOrdinal()
     .domain(partidos_principais)
-    .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', '#00008B']);
+    .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6']);
 
     var colorScale2 = d3.scaleOrdinal()
     .domain([0,10])
