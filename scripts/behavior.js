@@ -146,7 +146,7 @@ function generate_parallel() {
     .attr("d",  path)
     .attr("id", (d) => {return d.concelho})
     .style("fill", "none")
-    .style("stroke", () => {if (list.length != 0) {return "steelblue"} else {return "grey"}} )
+    .style("stroke", (d) => {if (list.includes(d.concelho)) {return "steelblue"} else {return "grey"}} )
     .style("opacity", 0.5)
     .append("title")
     .text(function (d) {
@@ -164,10 +164,10 @@ function generate_parallel() {
     .each(function(d) { d3.select(this).call(d3.axisLeft().scale(y[d])); })
     // Add axis title
     .append("text")
-      .style("text-anchor", "middle")
-      .attr("y", -9)
-      .text(function(d) { return d; })
-      .style("fill", "black")
+    .style("text-anchor", "middle")
+    .attr("y", -9)
+    .text(function(d) { return d; })
+    .style("fill", "black");
 }
 
 function generate_stacked() {
@@ -266,12 +266,17 @@ function generate_stacked() {
         .attr("width", xSubgroup.bandwidth())
         .attr("height", function(d) { return height - y(d.value[1]); })
         .attr("fill", function(d, i) { return d3.interpolateGnBu(((i+1)/list.length))})
+        .on("mouseover", function() {
+          mouseOverBars(this)
+        })			
+        .on("mouseleave", function() {
+          mouseLeaveBars(this) 
+        })
         .append("title")
         .text(function (d) {
           return "votes: " + Math.round(d.value[1]*100)/100 + "%";
         });;
-
-
+      
     //Title of X-Axis
     svg.append("text")
     .attr("text-anchor", "end")
@@ -434,6 +439,12 @@ function generate_bar() {
           return height - y1(d[attribute])
         })
         .attr("fill", "#7ba3c6")
+        .on("mouseover", function() {
+          mouseOverBars(this)
+        })			
+        .on("mouseleave", function() {
+          mouseLeaveBars(this) 
+        })
         .append("title")
         .text(function (d) {
           return attribute + ": " + d[attribute];
@@ -464,6 +475,12 @@ function generate_bar() {
           if(partidos_vencedores.includes(d.part)) {
             return colorScale1(d.part);
           }
+        })
+        .on("mouseover", function() {
+          mouseOverBall(this)
+        })			
+        .on("mouseleave", function() {
+          mouseLeaveBall(this) 
         })
         .append("title")
         .text(function (d) {
@@ -723,6 +740,12 @@ var colorScale2 = d3.scaleOrdinal()
         else {return  y(0)}
       })
       .attr("r", 1.5)
+      .on("mouseover", function() {
+        mouseOverCircles(this)
+      })			
+      .on("mouseleave", function() {
+        mouseLeaveCircles(this) 
+      })
       .append("title")
       .text(function (d) {return keys[part] + " Votes: " + d[keys[part]];});
   }
@@ -887,7 +910,7 @@ function clearBar() {
     .append("svg")
     .attr("width", width + margin.left + margin.right + 50)
     .attr("height", height + margin.top + margin.bottom + 40)
-  .attr("id", "bar-id")
+    .attr("id", "bar-id")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -1080,4 +1103,50 @@ function zoomed({transform}) {
     .selectAll("svg")
     .selectAll("path")
     .attr("transform", transform);
+}
+
+function mouseOverBars(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .style("opacity", 0.7);
+}
+
+function mouseLeaveBars(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .style("opacity", 1);
+}
+
+function mouseOverBall(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .style("stroke", '#E0C090')
+  .style("stroke-width", 3);
+}
+
+function mouseLeaveBall(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .style("stroke", 'none');
+}
+
+function mouseOverCircles(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .attr("r", 4)
+  .style("stroke", '#E0C090')
+  .style("stroke-width", 3);
+}
+
+function mouseLeaveCircles(obj) {
+  d3.select(obj)
+  .transition()
+  .duration(200)
+  .attr("r", 1.5)
+  .style("stroke", 'none');
 }
