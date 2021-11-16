@@ -443,7 +443,7 @@ function generate_bar() {
 
     var colorScale1 = d3.scaleOrdinal()
       .domain(partidos_vencedores)
-      .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#16b311', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#af0f88']);
+      .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#56ff00', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#af0f88']);
         
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
@@ -655,11 +655,11 @@ function generate_line_chart(concelho) {
 
 // Palete de cores - 1 cor por cada partido politico principal
 
-partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PS-PCP-PEV-UDP", "PPD/PSD-PPM", "PPD/PSD-CDS-PP-PPM"];
+partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PS-PCP-PEV-UDP", "PPD/PSD-PPM", "PPD/PSD-CDS-PP-PPM", "Grupo de cidadãos"];
 
 var colorScale1 = d3.scaleOrdinal()
 .domain(partidos_principais)
-.range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', "#ff1ddd", "#0800ff", '#066303']);
+.range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', "#ff1ddd", "#0800ff", '#066303', '#16b311']);
 
 
 // Palete de cores secundária para partidos menores/coligações
