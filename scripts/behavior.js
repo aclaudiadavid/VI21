@@ -268,15 +268,15 @@ function generate_stacked() {
         .attr("fill", function(d, i) { return d3.interpolateGnBu(((i+1)/list.length))})
         .on("mouseover", function() {
           mouseOverBars(this)
-        })			
+        })
         .on("mouseleave", function() {
-          mouseLeaveBars(this) 
+          mouseLeaveBars(this)
         })
         .append("title")
         .text(function (d) {
           return "votes: " + Math.round(d.value[1]*100)/100 + "%";
         });;
-      
+
     //Title of X-Axis
     svg.append("text")
     .attr("text-anchor", "end")
@@ -427,11 +427,12 @@ function generate_bar() {
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
-      
+
     svg.selectAll("bars")
       .data(data_bar)
       .enter()
       .append("rect")
+        .attr("class", (d)=>{return d.concelho + "-c"})
         .attr("x", function(d) {return x(d.concelho); })
         .attr("y", (d) => {return y1(d[attribute])})
         .attr("width", x.bandwidth())
@@ -441,9 +442,9 @@ function generate_bar() {
         .attr("fill", "#7ba3c6")
         .on("mouseover", function() {
           mouseOverBars(this)
-        })			
+        })
         .on("mouseleave", function() {
-          mouseLeaveBars(this) 
+          mouseLeaveBars(this)
         })
         .append("title")
         .text(function (d) {
@@ -455,7 +456,7 @@ function generate_bar() {
     var colorScale1 = d3.scaleOrdinal()
       .domain(partidos_vencedores)
       .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#581845', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#000000']);
-        
+
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
@@ -463,6 +464,7 @@ function generate_bar() {
       .data(data_bar)
       .enter()
       .append("circle")
+        .attr("class", (d)=>{return d.concelho + "-c"})
         .attr("cx", function(d) {return (x(d.concelho)+ (x.bandwidth()/2))})
         .attr("cy", (d) => {return y0(d["votes"])})
         .attr("r", ()=>{
@@ -478,9 +480,9 @@ function generate_bar() {
         })
         .on("mouseover", function() {
           mouseOverBall(this)
-        })			
+        })
         .on("mouseleave", function() {
-          mouseLeaveBall(this) 
+          mouseLeaveBall(this)
         })
         .append("title")
         .text(function (d) {
@@ -601,14 +603,17 @@ function add(d) {
 
     d3.select("#"+name)
       .attr("fill", "black");
+
+    d3.select('.'+name+"-c").transition().duration(500).remove()
   } else {
     list.push(name);
 
     d3.select("#"+name)
       .attr("fill", "steelblue");
+
+    generate_bar()
   }
   add_line_charts();
-  changeParallel();
   generate_stacked();
   generate_bar();
 }
@@ -742,9 +747,9 @@ var colorScale2 = d3.scaleOrdinal()
       .attr("r", 1.5)
       .on("mouseover", function() {
         mouseOverCircles(this)
-      })			
+      })
       .on("mouseleave", function() {
-        mouseLeaveCircles(this) 
+        mouseLeaveCircles(this)
       })
       .append("title")
       .text(function (d) {return keys[part] + " Votes: " + d[keys[part]];});
