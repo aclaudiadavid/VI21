@@ -443,7 +443,7 @@ function generate_bar() {
 
     var colorScale1 = d3.scaleOrdinal()
       .domain(partidos_vencedores)
-      .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#56ff00', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#af0f88']);
+      .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#581845', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#af0f88']);
         
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
