@@ -1022,8 +1022,8 @@ function clear_line() {
   svg.append("text")
   .attr("text-anchor", "end")
   .attr("transform", "rotate(-90)")
-  .attr("y", -margin.left + 40)
-  .attr("x", -margin.top)
+  .attr("y", -margin.left + 49)
+  .attr("x", -margin.top + 5)
   .style("font-size", "13px")
   .text("% of votes");
 }
