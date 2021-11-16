@@ -441,18 +441,12 @@ function generate_bar() {
           return attribute + ": " + d[attribute];
         });
 
-    partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PCP-PEV"];
+    partidos_vencedores = ["PS", "PPD/PSD", "PCP-PEV", "Grupo de cidadãos", "PPD/PSD-CDS-PP","PPD/PSD-CDS-PP-PPM", "PPD/PSD-CDS-PP-MPT-PPM", "PPD/PSD-PPM", "BE", "MPT", "CDS"];
 
     var colorScale1 = d3.scaleOrdinal()
-    .domain(partidos_principais)
-    .range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', '#00008B']);
-
-    var colorScale2 = d3.scaleOrdinal()
-    .domain([0,10])
-    .range(['#16b311', '#ddb220', '#b14d14', '#ff0000', '#000000', '#af0f88', '#6d5b69', '#16d189', '#581845','#56ff00'])
-
-
-
+      .domain(partidos_vencedores)
+      .range(['#f63574','#f08a01','#16d189', '#16b311', '#b14d14', '#b14d14','#c90535' ]);
+        
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
@@ -469,11 +463,8 @@ function generate_bar() {
           return height - y0(d[attribute]);
         })
         .attr("fill", function(d) {
-          if(partidos_principais.includes(d.part)) {
-            //console.
+          if(partidos_vencedores.includes(d.part)) {
             return colorScale1(d.part);
-          }else{
-            return colorScale2(d.part);
           }
         })
         .append("title")
