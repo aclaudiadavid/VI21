@@ -146,7 +146,7 @@ function generate_parallel() {
     .attr("d",  path)
     .attr("id", (d) => {return d.concelho})
     .style("fill", "none")
-    .style("stroke", (d) => {if (list.includes(d.concelho)) {return "steelblue"} else {return "grey"}} )
+    .style("stroke", (d) => {if (list.includes(d.concelho) || list.includes("PORTUGAL")) {return "steelblue"} else {return "grey"}} )
     .style("opacity", 0.5)
     .append("title")
     .text(function (d) {
@@ -843,19 +843,27 @@ function changeParallel() {
   .style("stroke", "grey")
   .style("opacity", 0.1)
 
-  for (i in list) {
+  if (list.includes("PORTUGAL")) {
     d3.select("#parallel-id")
     .selectAll("g")
     .selectAll("path")
-    .filter((d) => {
-      if(d != null) {
-        return d["concelho"] == list[i]
-      }
-    })
     .transition()
     .style("stroke", "steelblue")
-    .style('opacity', 1)
-    .style("stroke-width", "3px")
+  } else {
+    for (i in list) {
+      d3.select("#parallel-id")
+      .selectAll("g")
+      .selectAll("path")
+      .filter((d) => {
+        if(d != null) {
+          return d["concelho"] == list[i]
+        }
+      })
+      .transition()
+      .style("stroke", "steelblue")
+      .style('opacity', 1)
+      .style("stroke-width", "3px")
+    }
   }
 }
 
