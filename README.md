@@ -10,7 +10,7 @@
 
 
 ## Prototype
-![Image of Visualization](images/dashboard.jpeg)
+![Image of Visualization](images/dashboard.jpg)
 
 ## How to run
 ### Requirements
