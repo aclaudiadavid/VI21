@@ -110,7 +110,7 @@ function generate_parallel() {
 
   var svg = d3.select("#parallel")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    .attr("width", width + margin.left + margin.right + 10)
     .attr("height", height + margin.top + margin.bottom)
     .attr("id", "parallel-id")
     .append("g")
