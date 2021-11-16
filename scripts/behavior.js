@@ -19,6 +19,7 @@ var attrPos = ["crime", "employed", "immigrants", "seniors", "education", "power
 list = ["PORTUGAL"]
 regions = []
 margin = { top: 20, right: 20, bottom: 20, left: 40 };
+let years = [2001,2009,2013, 2017]
 year = 2009;
 var selector = [year, year, year, year, "total", year]
 
@@ -51,10 +52,8 @@ function yearF() {
 }
 
 function yearDown() {
-  year -= 4
-
-  if (year<1993) {
-    year = 1993
+  if(years.indexOf(year) != 0) {
+    year = years[years.indexOf(year)-1]
   }
 
   yearF()
@@ -64,10 +63,8 @@ function yearDown() {
 }
 
 function yearUp() {
-  year += 4;
-
-  if (year>2017) {
-    year = 2017
+  if(years.indexOf(year) != 3) {
+    year = years[years.indexOf(year)+1]
   }
 
   yearF()
@@ -425,7 +422,8 @@ function generate_bar() {
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
       .call(d3.axisRight(y1));
-      svg.selectAll("bars")
+      
+    svg.selectAll("bars")
       .data(data_bar)
       .enter()
       .append("rect")
@@ -435,17 +433,17 @@ function generate_bar() {
         .attr("height", function(d) {
           return height - y1(d[attribute])
         })
-        .attr("fill", "#b3d1ff")
+        .attr("fill", "#7ba3c6")
         .append("title")
         .text(function (d) {
           return attribute + ": " + d[attribute];
         });
 
-    partidos_vencedores = ["PS", "PPD/PSD", "PCP-PEV", "Grupo de cidadãos", "PPD/PSD-CDS-PP","PPD/PSD-CDS-PP-PPM", "PPD/PSD-CDS-PP-MPT-PPM", "PPD/PSD-PPM", "BE", "MPT", "CDS"];
+    partidos_vencedores = ["PS", "PPD/PSD", "PCP-PEV", "Grupo de cidadãos", "PPD/PSD-CDS-PP","PPD/PSD-CDS-PP-PPM", "PPD/PSD-CDS-PP-MPT-PPM", "PPD/PSD-PPM", "BE", "MPT", "CDS-PP", "PPD/PSD-CDS-PP-PPM-MPT"];
 
     var colorScale1 = d3.scaleOrdinal()
       .domain(partidos_vencedores)
-      .range(['#f63574','#f08a01','#16d189', '#16b311', '#b14d14', '#b14d14','#c90535' ]);
+      .range(['#f63574', '#f08a01', '#16d189', '#16b311', '#b14d14', '#066303', '#16b311', '#0800ff', '#c90535', '#6d5b69', '#008bd6', '#af0f88']);
         
     svg.append("g")
       .attr("transform", "translate(" + (width-10) + " ,0)")
@@ -503,7 +501,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% Employed");
@@ -511,7 +509,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% Immigrants");
@@ -519,7 +517,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("Ratio Seniors/100");
@@ -527,7 +525,7 @@ function generate_bar() {
       svg.append("text")
       .attr("text-anchor", "end")
       .attr("transform", "rotate(-90)")
-      .attr("y", 425)
+      .attr("y", 450)
       .attr("x", -margin.top + 25)
       .style("font-size", "13px")
       .text("% University Education");
@@ -657,11 +655,11 @@ function generate_line_chart(concelho) {
 
 // Palete de cores - 1 cor por cada partido politico principal
 
-partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP"];
+partidos_principais = ["PS", "PSD", "PAN", "BE", "PCP", "CDS-PP", "PS-PCP-PEV-UDP", "PPD/PSD-PPM", "PPD/PSD-CDS-PP-PPM"];
 
 var colorScale1 = d3.scaleOrdinal()
 .domain(partidos_principais)
-.range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6']);
+.range(['#f63574','#f08a01','#0e6283', '#c90535', '#fad405', '#008bd6', "#ff1ddd", "#0800ff", '#066303']);
 
 
 // Palete de cores secundária para partidos menores/coligações
@@ -887,9 +885,9 @@ function clearBar() {
 
   var svg = d3.select("#bar")
     .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom + 30)
-    .attr("id", "bar-id")
+    .attr("width", width + margin.left + margin.right + 50)
+    .attr("height", height + margin.top + margin.bottom + 40)
+  .attr("id", "bar-id")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -905,7 +903,7 @@ function clearBar() {
     .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x))
     .selectAll("text")
-    .attr("transform", "translate(-10,0)rotate(-45)")
+    .attr("transform", "translate(15,-5)rotate(-25)")  //TODO isto nao esta nada centrado
     .style("text-anchor", "end");
 
   var y0 = d3.scaleLinear()
@@ -915,7 +913,6 @@ function clearBar() {
   svg.append("g")
     .call(d3.axisLeft(y0));
 
-  //depends on what is selected
   var y1 = d3.scaleLinear()
     .domain([0, 100])
     .range([ height, 0 ]);
@@ -1054,8 +1051,12 @@ function getDataYear(year) {
     if(i != "PORTUGAL" && i != "CONTINENTE" && i != "NORTE" && i != "ÁREAMETROPOLITANADOPORTO" && i != "DOURO" && i != "TERRASDETRÁS-OS-MONTES" && i != "CENTRO" && i != "OESTE" && i != "REGIÃODEAVEIRO" && i != "REGIÃODECOIMBRA" && i != "REGIÃODELEIRIA" && i != "BEIRABAIXA" && i != "MÉDIOTEJO" && i != "BEIRASESERRADAESTRELA" && i != "ÁREAMETROPOLITANADELISBOA" && i != "ALENTEJO" && i != "ALENTEJOLITORAL" && i != "BAIXOALENTEJO" && i != "LEZÍRIADOTEJO" && i != "ALTOALENTEJO" && i != "ALENTEJOCENTRAL" && i != "ALGARVE" && i != "REGIÃOAUTÓNOMADOSAÇORES" && i != "ILHADESANTAMARIA" && i != "ILHADESÃOMIGUEL" && i != "ILHATERCEIRA" && i != "ILHAGRACIOSA" && i != "ILHADESÃOJORGE" && i != "ILHADOPICO" && i != "ILHADOFAIAL" && i != "ILHADASFLORES" && i != "ILHADOCORVO" && i != "REGIÃOAUTÓNOMADAMADEIRA" && i != "ILHADAMADEIRA" && i != "ILHADEPORTOSANTO") {
       c = votesRaw[i];
       concelho["concelho"] = i;
-      concelho["Crime Ratio"] = parallel_values[0][c][year] != null? parallel_values[0][c][year]:-1
-      concelho["% Employed"] = parallel_values[1][c][year] != null?   parallel_values[1][c][year] * 100:-1
+      if (parallel_values[0][c][year] != null) {
+        concelho["Crime Ratio"] = parallel_values[0][c][year] != -1? parallel_values[0][c][year]:-0.1
+      }
+      if (parallel_values[1][c][year] != null) {
+        concelho["% Employed"] = parallel_values[1][c][year] != -1?   parallel_values[1][c][year] * 100:-1
+      }
       concelho["% Immigrants"] = parallel_values[2][c][year] != null? parallel_values[2][c][year]:-1
       concelho["Ratio Seniors/100"] = parallel_values[3][c][year] != null? parallel_values[3][c][year]/100:-1
       concelho["% Univ. Edu."] = parallel_values[4][c][year]["total"] != null? parallel_values[4][c][year]["total"]*100:-1
